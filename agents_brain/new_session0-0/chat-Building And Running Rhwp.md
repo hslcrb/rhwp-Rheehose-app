@@ -189,3 +189,29 @@ origin 및 원격 연결 다 끊고 파일 변화가 감지되니 전부 다 com
 *Checked command status*
 
 *Edited relevant file*
+
+### User Input
+
+데스크탑 앱도 빌드하라. 있나? 없으면 만들어라. 그리고 한컴오피스 뷰어 앱을 대체할(안드로이드) 이 rhwp 엔진 기반의 뉴아래한글(가칭) 앱 도 만들어라. 안드로이드 앱은 코틀린 gradle로. 그러기 위한 계획서를 아주 길고도 상세하게 하라. 브랜치 계획도 포함되어 있어야 한다. 머지나 pr은 오로지 본인의 명령시에만. 참고로 gradle 설치도ㅓㅣ어있다.
+
+*Listed directory [rhwp-shared](file:///home/rheehose/%EB%AC%B8%EC%84%9C/%EA%B0%9C%EB%B0%9C%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8/rhwp/rhwp-shared) *
+
+*User accepted the command `grep -rnE "android|desktop" . | grep -v "node_modules" | head -n 20`*
+
+*Checked command status*
+
+*User accepted the command `find . -maxdepth 2 -name "*tauri*" -o -name "*electron*" -o -name "*capacitor*"`*
+
+*Checked command status*
+
+*Edited relevant file*
+
+*Edited relevant file*
+
+*User accepted the command `gradle --version && cargo tauri --version`*
+
+*Checked command status*
+
+*Checked command status*
+
+*Edited relevant file*

@@ -1,8 +1,8 @@
-# Task: Project Setup and Build
+# Task: Project Expansion (Desktop & Android)
 
-- [x] Explore project structure and build instructions
-- [x] Create implementation plan
-- [x] Install dependencies
-- [x] Build the project
-- [x] Run the project
-- [x] Verify functionality
+- [x] Create detailed implementation plan
+- [ ] Initialize Desktop App (Tauri) [ ]
+- [ ] Initialize Android App ("뉴아래한글") [ ]
+- [ ] Integrate Rust Core with Android (JNI/UniFFI) [ ]
+- [ ] Build and verify Desktop App [ ]
+- [ ] Build and verify Android App [ ]
