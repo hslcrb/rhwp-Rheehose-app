@@ -161,7 +161,7 @@ impl SvgRenderer {
                 if let Some(img) = &bg.image {
                     let base64_data = base64::engine::general_purpose::STANDARD.encode(&img.data);
                     let mime_type = detect_image_mime_type(&img.data);
-                    let data_uri = format!("data:{};base64,{}", mime_type, base64_data);
+                    let data_uri = format!("data:{}base64,{}", mime_type, base64_data);
                     self.output.push_str(&format!(
                         "<image x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" preserveAspectRatio=\"none\" href=\"{}\"/>\n",
                         node.bbox.x, node.bbox.y,
@@ -2288,7 +2288,7 @@ pub fn generate_font_style(
                         .join(", ")
                 };
                 css.push_str(&format!(
-                    "@font-face {{ font-family: \"{}\"; src: {}; }}\n",
+                    "@font-face {{ font-family: \"{}\"; src: {}); }}\n",
                     font_name, src,
                 ));
             }
@@ -2335,7 +2335,7 @@ pub fn generate_font_style(
                     aliases.iter().map(|a| format!("local(\"{}\")", a)).collect::<Vec<_>>().join(", ")
                 };
                 css.push_str(&format!(
-                    "@font-face {{ font-family: \"{}\"; src: {}; }}\n",
+                    "@font-face {{ font-family: \"{}\"; src: {}); }}\n",
                     font_name, src,
                 ));
             }
@@ -2361,7 +2361,7 @@ pub fn generate_font_style(
                     aliases.iter().map(|a| format!("local(\"{}\")", a)).collect::<Vec<_>>().join(", ")
                 };
                 css.push_str(&format!(
-                    "@font-face {{ font-family: \"{}\"; src: {}; }}\n",
+                    "@font-face {{ font-family: \"{}\"; src: {}); }}\n",
                     font_name, src,
                 ));
             }

@@ -103,13 +103,13 @@ impl LogColorSpace {
         if signature != 0x50534F43 {
             return Err(crate::wmf::parser::ParseError::UnexpectedPattern {
                 cause: "The signature field must be 0x50534F43".to_owned(),
-            });
+            };
         }
 
         if version != 0x00000400 {
             return Err(crate::wmf::parser::ParseError::UnexpectedPattern {
                 cause: "The version field must be 0x00000400".to_owned(),
-            });
+            };
         }
 
         Ok((

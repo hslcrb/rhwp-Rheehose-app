@@ -88,7 +88,7 @@ pub fn diff_hwpx_vs_serializer_assumptions(hwpx: &Document) -> DiffSummary {
                 location: format!("sec={}", sec_idx),
                 hwpx_value: "Some(...)".into(),
                 hwp_value: "(직렬화기는 raw_stream 우선 — 빠른 경로)".into(),
-            });
+            };
         } else {
             // None 이어도 직렬화기 동적 경로로 OK — 진단에는 기록만 하고 위반 아님
             // (구현계획서 §1.0.2: 영역을 늘리지 않고 줄이는 것이 성공)
@@ -117,7 +117,7 @@ fn check_paragraph(
                 location: format!("{}sec={},para={},ls={}", path_prefix, sec_idx, para_idx, li),
                 hwpx_value: "0".into(),
                 hwp_value: "(절대 좌표 — 직렬화기는 그대로 기록)".into(),
-            });
+            };
         }
     }
 
@@ -133,7 +133,7 @@ fn check_paragraph(
                     ),
                     hwpx_value: "(empty)".into(),
                     hwp_value: "(CommonObjAttr 직렬화 필요)".into(),
-                });
+                };
             }
             if t.raw_table_record_attr == 0 && (t.attr != 0
                 || t.repeat_header
@@ -149,7 +149,7 @@ fn check_paragraph(
                         "(재구성 필요: page_break={:?}, repeat={})",
                         t.page_break, t.repeat_header
                     ),
-                });
+                };
             }
             // 셀별 검사
             for (cell_idx, cell) in t.cells.iter().enumerate() {
@@ -162,7 +162,7 @@ fn check_paragraph(
                         ),
                         hwpx_value: "apply_inner_margin=true, bit16=0".into(),
                         hwp_value: "bit16=1 (셀 안 여백 지정)".into(),
-                    });
+                    };
                 }
                 // 셀 내부 문단 재귀
                 let cell_prefix = format!(
@@ -196,7 +196,7 @@ pub fn diff_hwpx_vs_hwp(hwpx: &Document, hwp: &Document) -> DiffSummary {
             location: "doc".into(),
             hwpx_value: format!("{}", hwpx.sections.len()),
             hwp_value: format!("{}", hwp.sections.len()),
-        });
+        };
     }
 
     // 영역별 비교는 Stage 2 부터 본격 추가.

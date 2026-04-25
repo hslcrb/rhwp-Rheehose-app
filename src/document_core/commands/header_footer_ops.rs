@@ -145,7 +145,7 @@ impl DocumentCore {
         // 구역의 첫 번째 문단에 컨트롤 추가 (SectionDef 컨트롤이 있는 곳)
         let section = &mut self.document.sections[section_idx];
         if section.paragraphs.is_empty() {
-            return Err(HwpError::RenderError("구역에 문단이 없습니다".to_string()));
+            return Err(HwpError::RenderError { message: "구역에 문단이 없습니다".to_string() });
         }
         section.paragraphs[0].controls.push(ctrl);
         // 컨트롤 1개 = UTF-16 8 code units → char_count 갱신
@@ -180,7 +180,7 @@ impl DocumentCore {
         let (pi, ci) = self.find_header_footer_control(section_idx, is_header, apply)
             .ok_or_else(|| {
                 let kind = if is_header { "머리말" } else { "꼬리말" };
-                HwpError::RenderError(format!("{}({})이 존재하지 않습니다", kind, apply_label(apply)))
+                HwpError::RenderError { message: format!("{}({} }이 존재하지 않습니다", kind, apply_label(apply)))
             })?;
 
         let ctrl = &mut self.document.sections[section_idx].paragraphs[pi].controls[ci];
@@ -201,7 +201,7 @@ impl DocumentCore {
                 }
                 Ok(&mut f.paragraphs[hf_para_idx])
             }
-            _ => Err(HwpError::RenderError("컨트롤이 머리말/꼬리말이 아닙니다".to_string())),
+            _ => Err(HwpError::RenderError { message: "컨트롤이 머리말/꼬리말이 아닙니다".to_string() },
         }
     }
 
@@ -254,7 +254,7 @@ impl DocumentCore {
         let new_offset = char_offset + new_chars_count;
         self.event_log.push(DocumentEvent::TextInserted {
             section: section_idx, para: 0, offset: char_offset, len: new_chars_count,
-        });
+        };
         Ok(super::super::helpers::json_ok_with(&format!("\"charOffset\":{}", new_offset)))
     }
 
@@ -287,7 +287,7 @@ impl DocumentCore {
 
         self.event_log.push(DocumentEvent::TextDeleted {
             section: section_idx, para: 0, offset: char_offset, count,
-        });
+        };
         Ok(super::super::helpers::json_ok_with(&format!("\"charOffset\":{}", char_offset)))
     }
 
@@ -310,7 +310,7 @@ impl DocumentCore {
         let (pi, ci) = self.find_header_footer_control(section_idx, is_header, apply)
             .ok_or_else(|| {
                 let kind = if is_header { "머리말" } else { "꼬리말" };
-                HwpError::RenderError(format!("{}이 존재하지 않습니다", kind))
+                HwpError::RenderError { message: format!("{}이 존재하지 않습니다", kind) }
             })?;
 
         // 문단 분할
@@ -319,7 +319,7 @@ impl DocumentCore {
             let paragraphs = match ctrl {
                 Control::Header(h) => &mut h.paragraphs,
                 Control::Footer(f) => &mut f.paragraphs,
-                _ => return Err(HwpError::RenderError("컨트롤 타입 불일치".to_string())),
+                _ => return Err(HwpError::RenderError { message: "컨트롤 타입 불일치".to_string() },
             };
             if hf_para_idx >= paragraphs.len() {
                 return Err(HwpError::RenderError(format!(
@@ -351,7 +351,7 @@ impl DocumentCore {
 
         self.event_log.push(DocumentEvent::ParagraphSplit {
             section: section_idx, para: hf_para_idx, offset: char_offset,
-        });
+        };
         Ok(super::super::helpers::json_ok_with(
             &format!("\"hfParaIndex\":{},\"charOffset\":0", new_para_idx)
         ))
@@ -371,14 +371,14 @@ impl DocumentCore {
             )));
         }
         if hf_para_idx == 0 {
-            return Err(HwpError::RenderError("첫 번째 문단은 이전 문단과 병합할 수 없습니다".to_string()));
+            return Err(HwpError::RenderError { message: "첫 번째 문단은 이전 문단과 병합할 수 없습니다".to_string() });
         }
 
         let apply = apply_from_u8(apply_to);
         let (pi, ci) = self.find_header_footer_control(section_idx, is_header, apply)
             .ok_or_else(|| {
                 let kind = if is_header { "머리말" } else { "꼬리말" };
-                HwpError::RenderError(format!("{}이 존재하지 않습니다", kind))
+                HwpError::RenderError { message: format!("{}이 존재하지 않습니다", kind) }
             })?;
 
         // 병합
@@ -388,7 +388,7 @@ impl DocumentCore {
             let paragraphs = match ctrl {
                 Control::Header(h) => &mut h.paragraphs,
                 Control::Footer(f) => &mut f.paragraphs,
-                _ => return Err(HwpError::RenderError("컨트롤 타입 불일치".to_string())),
+                _ => return Err(HwpError::RenderError { message: "컨트롤 타입 불일치".to_string() },
             };
             if hf_para_idx >= paragraphs.len() {
                 return Err(HwpError::RenderError(format!(
@@ -409,7 +409,7 @@ impl DocumentCore {
 
         self.event_log.push(DocumentEvent::ParagraphMerged {
             section: section_idx, para: hf_para_idx,
-        });
+        };
         Ok(super::super::helpers::json_ok_with(
             &format!("\"hfParaIndex\":{},\"charOffset\":{}", prev_idx, merge_offset)
         ))
@@ -432,14 +432,14 @@ impl DocumentCore {
         let (pi, ci) = self.find_header_footer_control(section_idx, is_header, apply)
             .ok_or_else(|| {
                 let kind = if is_header { "머리말" } else { "꼬리말" };
-                HwpError::RenderError(format!("{}이 존재하지 않습니다", kind))
+                HwpError::RenderError { message: format!("{}이 존재하지 않습니다", kind) }
             })?;
 
         let ctrl = &self.document.sections[section_idx].paragraphs[pi].controls[ci];
         let paragraphs = match ctrl {
             Control::Header(h) => &h.paragraphs,
             Control::Footer(f) => &f.paragraphs,
-            _ => return Err(HwpError::RenderError("컨트롤 타입 불일치".to_string())),
+            _ => return Err(HwpError::RenderError { message: "컨트롤 타입 불일치".to_string() },
         };
 
         let para_count = paragraphs.len();
@@ -471,7 +471,7 @@ impl DocumentCore {
         let (pi, ci) = self.find_header_footer_control(section_idx, is_header, apply)
             .ok_or_else(|| {
                 let kind = if is_header { "머리말" } else { "꼬리말" };
-                HwpError::RenderError(format!("{}({})이 존재하지 않습니다", kind, apply_label(apply)))
+                HwpError::RenderError { message: format!("{}({} }이 존재하지 않습니다", kind, apply_label(apply)))
             })?;
 
         self.document.sections[section_idx].paragraphs[pi].controls.remove(ci);
@@ -687,7 +687,7 @@ impl DocumentCore {
         hf_para_idx: usize,
     ) -> Result<String, HwpError> {
         let para = self.get_hf_paragraph_ref(section_idx, is_header, apply_to, hf_para_idx)
-            .ok_or_else(|| HwpError::RenderError("머리말/꼬리말 문단을 찾을 수 없음".to_string()))?;
+            .ok_or_else(|| HwpError::RenderError { message: "머리말/꼬리말 문단을 찾을 수 없음".to_string() })?;
         Ok(self.build_para_properties_json(para.para_shape_id, section_idx))
     }
 
@@ -703,7 +703,7 @@ impl DocumentCore {
         // 현재 para_shape_id 조회
         let base_id = {
             let para = self.get_hf_paragraph_ref(section_idx, is_header, apply_to, hf_para_idx)
-                .ok_or_else(|| HwpError::RenderError("머리말/꼬리말 문단을 찾을 수 없음".to_string()))?;
+                .ok_or_else(|| HwpError::RenderError { message: "머리말/꼬리말 문단을 찾을 수 없음".to_string() })?;
             para.para_shape_id
         };
 
@@ -763,7 +763,7 @@ impl DocumentCore {
             1 => "\u{0015}",  // 현재 쪽번호
             2 => "\u{0016}",  // 총 쪽수
             3 => "\u{0017}",  // 파일 이름
-            _ => return Err(HwpError::RenderError(format!("알 수 없는 필드 타입: {}", field_type))),
+            _ => return Err(HwpError::RenderError { message: format!("알 수 없는 필드 타입: {}", field_type) },
         };
 
         let hf_para = self.get_hf_paragraph_mut(section_idx, is_header, apply_to, hf_para_idx)?;
@@ -778,7 +778,7 @@ impl DocumentCore {
         let new_offset = char_offset + 1;
         self.event_log.push(DocumentEvent::TextInserted {
             section: section_idx, para: 0, offset: char_offset, len: 1,
-        });
+        };
         Ok(super::super::helpers::json_ok_with(&format!("\"charOffset\":{}", new_offset)))
     }
 

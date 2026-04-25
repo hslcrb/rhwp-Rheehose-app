@@ -23,7 +23,7 @@ impl crate::wmf::parser::META_ESCAPE {
                 cause: format!(
                     "The byte_count `{byte_count:#06X}` field must be `0x0004`",
                 ),
-            });
+            };
         }
 
         if reserved1 != 0x0000 {
@@ -31,7 +31,7 @@ impl crate::wmf::parser::META_ESCAPE {
                 cause: format!(
                     "The reserved1 `{reserved1:#06X}` field should be `0x0000`",
                 ),
-            });
+            };
         }
 
         crate::wmf::parser::records::consume_remaining_bytes(buf, record_size)?;

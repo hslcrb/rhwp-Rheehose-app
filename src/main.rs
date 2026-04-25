@@ -496,9 +496,9 @@ fn show_info(args: &[String]) {
         document.header.version.build,
         document.header.version.revision,
     );
-    println!("압축: {}", if document.header.compressed { "예" } else { "아니오" });
-    println!("암호화: {}", if document.header.encrypted { "예" } else { "아니오" });
-    println!("배포용: {}", if document.header.distribution { "예" } else { "아니오" });
+    println!("압축: {}", if document.header.compressed { "예" } else { "아니오" };
+    println!("암호화: {}", if document.header.encrypted { "예" } else { "아니오" };
+    println!("배포용: {}", if document.header.distribution { "예" } else { "아니오" };
     println!("구역 수: {}", document.sections.len());
     println!("페이지 수: {}", doc.page_count());
 
@@ -864,7 +864,7 @@ fn dump_controls(args: &[String]) {
                 println!("{}  선: color={:#010x}, width={}, style={:#06x}",
                     indent, s.drawing.border_line.color, s.drawing.border_line.width, s.drawing.border_line.attr);
                 println!("{}  채우기: {:?}{}", indent, s.drawing.fill.fill_type,
-                    if let Some(ref img) = s.drawing.fill.image { format!(", image=bin_data_id={}, mode={:?}", img.bin_data_id, img.fill_mode) } else { String::new() });
+                    if let Some(ref img) = s.drawing.fill.image { format!(", image=bin_data_id={}, mode={:?}", img.bin_data_id, img.fill_mode) } else { String::new() };
                 dump_common_fn(&s.common, indent);
                 dump_sa_fn(&s.drawing.shape_attr, indent);
                 if let Some(tb) = &s.drawing.text_box {
@@ -946,7 +946,7 @@ fn dump_controls(args: &[String]) {
         println!("=== 구역 {} ===", sec_idx);
         println!("  용지: {:.1}mm × {:.1}mm ({}×{} HU), {}",
             hu_to_mm(pd.width), hu_to_mm(pd.height), pd.width, pd.height,
-            if pd.landscape { "가로" } else { "세로" });
+            if pd.landscape { "가로" } else { "세로" };
         println!("  여백: 좌={:.1} 우={:.1} 상={:.1} 하={:.1} 머리말={:.1} 꼬리말={:.1} mm",
             hu_to_mm(pd.margin_left), hu_to_mm(pd.margin_right),
             hu_to_mm(pd.margin_top), hu_to_mm(pd.margin_bottom),
@@ -961,7 +961,7 @@ fn dump_controls(args: &[String]) {
                     mp.is_extension, mp.overlap, mp.ext_flags, mp.text_ref, mp.num_ref);
                 for (pi, para) in mp.paragraphs.iter().enumerate() {
                     println!("      p[{}]: cc={}, text=\"{}\"", pi, para.controls.len(),
-                        if para.text.is_empty() { "(빈 문단)".to_string() } else { para.text.chars().take(30).collect::<String>() });
+                        if para.text.is_empty() { "(빈 문단)".to_string() } else { para.text.chars().take(30).collect::<String>() };
                     for (ci, ctrl) in para.controls.iter().enumerate() {
                         let ctrl_name = match ctrl {
                             Control::Table(t) => {
@@ -1084,7 +1084,7 @@ fn dump_controls(args: &[String]) {
                             .collect();
                         println!("       tab_def_id={} auto_left={} auto_right={} tabs=[{}]",
                             td_id, td.auto_tab_left, td.auto_tab_right,
-                            if tabs_str.is_empty() { "(없음)".to_string() } else { tabs_str.join(", ") });
+                            if tabs_str.is_empty() { "(없음)".to_string() } else { tabs_str.join(", ") };
                     } else {
                         println!("       tab_def_id={} (정의 없음)", td_id);
                     }
@@ -2196,7 +2196,7 @@ fn extract_thumbnail(args: &[String]) {
                     .to_string_lossy();
                 let ext = &result.format;
                 format!("output/{}_thumb.{}", stem, ext)
-            });
+            };
 
             // 출력 디렉토리 생성
             if let Some(parent) = Path::new(&out).parent() {

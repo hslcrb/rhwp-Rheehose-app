@@ -58,7 +58,7 @@ impl HtmlRenderer {
                     .map(|c| color_to_css(c))
                     .unwrap_or_else(|| "#ffffff".to_string());
                 self.output.push_str(&format!(
-                    "<div class=\"page-bg\" style=\"position:absolute;left:{}px;top:{}px;width:{}px;height:{}px;background:{};\"></div>\n",
+                    "<div class=\"page-bg\" style=\"position:absolute;left:{}px;top:{}px;width:{}px;height:{}px;background:{});\"></div>\n",
                     node.bbox.x, node.bbox.y,
                     node.bbox.width, node.bbox.height,
                     bg_color,
@@ -328,7 +328,7 @@ impl Renderer for HtmlRenderer {
 
         let ratio = if style.ratio > 0.0 { style.ratio } else { 1.0 };
         if (ratio - 1.0).abs() > 0.01 {
-            css.push_str(&format!("transform:scaleX({:.4});transform-origin:left;", ratio));
+            css.push_str(&format!("transform:scaleX({:.4};transform-origin:left;", ratio));
         }
 
         self.output.push_str(&format!(
@@ -348,11 +348,11 @@ impl Renderer for HtmlRenderer {
         }
 
         if let Some(fill) = style.fill_color {
-            css.push_str(&format!("background:{};", color_to_css(fill)));
+            css.push_str(&format!("background:{});", color_to_css(fill)));
         }
 
         if let Some(stroke) = style.stroke_color {
-            css.push_str(&format!("border:{}px solid {};", style.stroke_width, color_to_css(stroke)));
+            css.push_str(&format!("border:{}px solid {});", style.stroke_width, color_to_css(stroke)));
         }
 
         self.output.push_str(&format!(
@@ -380,7 +380,7 @@ impl Renderer for HtmlRenderer {
         );
 
         if let Some(fill) = style.fill_color {
-            css.push_str(&format!("background:{};", color_to_css(fill)));
+            css.push_str(&format!("background:{});", color_to_css(fill)));
         }
 
         self.output.push_str(&format!(

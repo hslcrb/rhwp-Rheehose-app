@@ -51,9 +51,9 @@ impl DocumentCore {
         }
 
         let section = self.document.sections.get_mut(sec)
-            .ok_or_else(|| HwpError::RenderError("구역 범위 초과".into()))?;
+            .ok_or_else(|| HwpError::RenderError { message: "구역 범위 초과".into() })?;
         let paragraph = section.paragraphs.get_mut(para)
-            .ok_or_else(|| HwpError::RenderError("문단 범위 초과".into()))?;
+            .ok_or_else(|| HwpError::RenderError { message: "문단 범위 초과".into() })?;
 
         // char_offset에 해당하는 컨트롤 삽입 위치 결정
         let insert_idx = find_control_insert_index(paragraph, char_offset);
@@ -87,9 +87,9 @@ impl DocumentCore {
         ctrl_idx: usize,
     ) -> Result<String, HwpError> {
         let section = self.document.sections.get_mut(sec)
-            .ok_or_else(|| HwpError::RenderError("구역 범위 초과".into()))?;
+            .ok_or_else(|| HwpError::RenderError { message: "구역 범위 초과".into() })?;
         let paragraph = section.paragraphs.get_mut(para)
-            .ok_or_else(|| HwpError::RenderError("문단 범위 초과".into()))?;
+            .ok_or_else(|| HwpError::RenderError { message: "문단 범위 초과".into() })?;
 
         if ctrl_idx >= paragraph.controls.len() {
             return Ok(r#"{"ok":false,"error":"컨트롤 인덱스 범위 초과"}"#.to_string());
@@ -132,9 +132,9 @@ impl DocumentCore {
         }
 
         let section = self.document.sections.get_mut(sec)
-            .ok_or_else(|| HwpError::RenderError("구역 범위 초과".into()))?;
+            .ok_or_else(|| HwpError::RenderError { message: "구역 범위 초과".into() })?;
         let paragraph = section.paragraphs.get_mut(para)
-            .ok_or_else(|| HwpError::RenderError("문단 범위 초과".into()))?;
+            .ok_or_else(|| HwpError::RenderError { message: "문단 범위 초과".into() })?;
 
         if ctrl_idx >= paragraph.controls.len() {
             return Ok(r#"{"ok":false,"error":"컨트롤 인덱스 범위 초과"}"#.to_string());
@@ -192,7 +192,7 @@ fn collect_bookmarks_from_paragraphs(
                         para: effective_para,
                         ctrl_idx,
                         char_pos,
-                    });
+                    };
                 }
                 Control::Table(t) => {
                     for cell in &t.cells {

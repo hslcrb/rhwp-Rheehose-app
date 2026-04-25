@@ -62,7 +62,7 @@ impl TernaryRasterOperator {
                     "TernaryRasterOperation {:?} cannot access brush.",
                     self.operation,
                 ),
-            });
+            };
         }
 
         if self.operation.use_source() && self.source.is_none() {
@@ -71,7 +71,7 @@ impl TernaryRasterOperator {
                     "TernaryRasterOperation {:?} cannot access source bitmap.",
                     self.operation,
                 ),
-            });
+            };
         }
 
         let result: Node = match self.operation {

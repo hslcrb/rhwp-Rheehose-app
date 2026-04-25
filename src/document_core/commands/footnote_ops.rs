@@ -165,7 +165,7 @@ impl DocumentCore {
         let new_offset = char_offset + new_chars_count;
         self.event_log.push(DocumentEvent::TextInserted {
             section: section_idx, para: para_idx, offset: char_offset, len: new_chars_count,
-        });
+        };
         Ok(super::super::helpers::json_ok_with(&format!("\"charOffset\":{}", new_offset)))
     }
 
@@ -190,7 +190,7 @@ impl DocumentCore {
 
         self.event_log.push(DocumentEvent::TextDeleted {
             section: section_idx, para: para_idx, offset: char_offset, count,
-        });
+        };
         Ok(super::super::helpers::json_ok_with(&format!("\"charOffset\":{}", char_offset)))
     }
 
@@ -206,11 +206,11 @@ impl DocumentCore {
         // 문단 분할
         let new_para = {
             let section = self.document.sections.get_mut(section_idx)
-                .ok_or_else(|| HwpError::RenderError(format!("구역 인덱스 {} 범위 초과", section_idx)))?;
+                .ok_or_else(|| HwpError::RenderError { message: format!("구역 인덱스 {} 범위 초과", section_idx) })?;
             let para = section.paragraphs.get_mut(para_idx)
-                .ok_or_else(|| HwpError::RenderError(format!("문단 인덱스 {} 범위 초과", para_idx)))?;
+                .ok_or_else(|| HwpError::RenderError { message: format!("문단 인덱스 {} 범위 초과", para_idx) })?;
             let ctrl = para.controls.get_mut(control_idx)
-                .ok_or_else(|| HwpError::RenderError(format!("컨트롤 인덱스 {} 범위 초과", control_idx)))?;
+                .ok_or_else(|| HwpError::RenderError { message: format!("컨트롤 인덱스 {} 범위 초과", control_idx) })?;
             match ctrl {
                 Control::Footnote(f) => {
                     if fn_para_idx >= f.paragraphs.len() {
@@ -220,7 +220,7 @@ impl DocumentCore {
                     }
                     f.paragraphs[fn_para_idx].split_at(char_offset)
                 }
-                _ => return Err(HwpError::RenderError("컨트롤이 각주가 아닙니다".to_string())),
+                _ => return Err(HwpError::RenderError { message: "컨트롤이 각주가 아닙니다".to_string() },
             }
         };
 
@@ -243,7 +243,7 @@ impl DocumentCore {
 
         self.event_log.push(DocumentEvent::ParagraphSplit {
             section: section_idx, para: para_idx, offset: char_offset,
-        });
+        };
         Ok(super::super::helpers::json_ok_with(
             &format!("\"fnParaIndex\":{},\"charOffset\":0", new_para_idx)
         ))
@@ -258,17 +258,17 @@ impl DocumentCore {
         fn_para_idx: usize,
     ) -> Result<String, HwpError> {
         if fn_para_idx == 0 {
-            return Err(HwpError::RenderError("첫 번째 문단은 이전 문단과 병합할 수 없습니다".to_string()));
+            return Err(HwpError::RenderError { message: "첫 번째 문단은 이전 문단과 병합할 수 없습니다".to_string() });
         }
 
         let merge_offset;
         {
             let section = self.document.sections.get_mut(section_idx)
-                .ok_or_else(|| HwpError::RenderError(format!("구역 인덱스 {} 범위 초과", section_idx)))?;
+                .ok_or_else(|| HwpError::RenderError { message: format!("구역 인덱스 {} 범위 초과", section_idx) })?;
             let para = section.paragraphs.get_mut(para_idx)
-                .ok_or_else(|| HwpError::RenderError(format!("문단 인덱스 {} 범위 초과", para_idx)))?;
+                .ok_or_else(|| HwpError::RenderError { message: format!("문단 인덱스 {} 범위 초과", para_idx) })?;
             let ctrl = para.controls.get_mut(control_idx)
-                .ok_or_else(|| HwpError::RenderError(format!("컨트롤 인덱스 {} 범위 초과", control_idx)))?;
+                .ok_or_else(|| HwpError::RenderError { message: format!("컨트롤 인덱스 {} 범위 초과", control_idx) })?;
             match ctrl {
                 Control::Footnote(f) => {
                     if fn_para_idx >= f.paragraphs.len() {
@@ -280,7 +280,7 @@ impl DocumentCore {
                     let removed = f.paragraphs.remove(fn_para_idx);
                     f.paragraphs[fn_para_idx - 1].merge_from(&removed);
                 }
-                _ => return Err(HwpError::RenderError("컨트롤이 각주가 아닙니다".to_string())),
+                _ => return Err(HwpError::RenderError { message: "컨트롤이 각주가 아닙니다".to_string() },
             }
         }
 
@@ -293,7 +293,7 @@ impl DocumentCore {
 
         self.event_log.push(DocumentEvent::ParagraphMerged {
             section: section_idx, para: para_idx,
-        });
+        };
         Ok(super::super::helpers::json_ok_with(
             &format!("\"fnParaIndex\":{},\"charOffset\":{}", prev_idx, merge_offset)
         ))

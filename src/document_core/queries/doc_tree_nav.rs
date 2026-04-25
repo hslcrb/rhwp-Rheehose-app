@@ -186,7 +186,7 @@ impl DocumentCore {
                 ctrl_text_pos,
                 cell_idx: entry.cell_idx,
                 is_textbox: entry.is_textbox,
-            });
+            };
 
             // 다음 depth를 위해 현재 컨트롤 내부 paragraphs로 이동
             if let Some(para) = paragraphs.get(entry.parent_para) {
@@ -436,7 +436,7 @@ impl DocumentCore {
                             ctrl_text_pos,
                             cell_idx: 0,
                             is_textbox: true,
-                        });
+                        };
                         return self.navigate_to_para_start(sec, 0, &target_ctx, overflow_links);
                     }
                 }
@@ -465,7 +465,7 @@ impl DocumentCore {
                             ctrl_text_pos,
                             cell_idx: 0,
                             is_textbox: true,
-                        });
+                        };
                         // overflow_start - 1 = 소스에서 마지막으로 렌더링된 문단
                         let last_rendered = link.overflow_start.saturating_sub(1);
                         return self.navigate_to_para_end(sec, last_rendered, &source_ctx, overflow_links);
@@ -504,7 +504,7 @@ impl DocumentCore {
                             ctrl_text_pos: last.ctrl_text_pos,
                             cell_idx: next_cell,
                             is_textbox: false,
-                        });
+                        };
                         if forward {
                             return self.navigate_to_para_start(sec, 0, &new_ctx, overflow_links);
                         } else {
@@ -664,7 +664,7 @@ impl DocumentCore {
                 ctrl_text_pos,
                 cell_idx: 0,
                 is_textbox: true,
-            });
+            };
             self.navigate_to_para_start(sec, 0, &new_ctx, overflow_links)
         } else {
             // Table: 첫 셀로 진입
@@ -674,7 +674,7 @@ impl DocumentCore {
                 ctrl_text_pos,
                 cell_idx: 0,
                 is_textbox: false,
-            });
+            };
             self.navigate_to_para_start(sec, 0, &new_ctx, overflow_links)
         }
     }
@@ -700,7 +700,7 @@ impl DocumentCore {
                 ctrl_text_pos,
                 cell_idx: 0,
                 is_textbox: true,
-            });
+            };
 
             // 이 글상자가 오버플로우 소스이면, 타겟의 마지막 문단 끝으로 진입
             if let Some(link) = overflow_links.iter().find(|l|
@@ -713,7 +713,7 @@ impl DocumentCore {
                     ctrl_text_pos,
                     cell_idx: 0,
                     is_textbox: true,
-                });
+                };
                 let target_paras = match resolve_paragraphs(sections, sec, &target_ctx, overflow_links) {
                     Some(p) => p,
                     None => return NavResult::Boundary,
@@ -748,7 +748,7 @@ impl DocumentCore {
                     ctrl_text_pos,
                     cell_idx: last_cell,
                     is_textbox: false,
-                });
+                };
                 let cell_para_count = table.cells.get(last_cell)
                     .map(|c| c.paragraphs.len()).unwrap_or(1);
                 return self.navigate_to_para_end(sec, cell_para_count.saturating_sub(1), &new_ctx, overflow_links);
@@ -1112,7 +1112,7 @@ impl DocumentCore {
                     overflow_start: oi,
                     target_parent_para: tgt_pi,
                     target_ctrl_idx: tgt_ci,
-                });
+                };
                 empty_targets.remove(idx);
             }
         }

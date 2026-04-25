@@ -65,7 +65,7 @@ fn parse_table_directory_at(data: &[u8], header_off: usize) -> Vec<TableEntry> {
             tag: tag_str(data, entry_off),
             offset: read_u32_be(data, entry_off + 8),
             length: read_u32_be(data, entry_off + 12),
-        });
+        };
     }
     tables
 }
@@ -327,7 +327,7 @@ fn parse_ttf_all(path: &Path) -> Result<Vec<FontMetric>, String> {
             bold: (head.mac_style & 0x01) != 0,
             italic: (head.mac_style & 0x02) != 0,
             char_widths,
-        });
+        };
     }
 
     if results.is_empty() {
@@ -385,7 +385,7 @@ fn compress_hangul(
             widths: vec![first_w],
             max_error: 0,
             avg_error: 0.0,
-        });
+        };
     }
 
     // 초/중/종성별 폭 패턴 분석
@@ -598,7 +598,7 @@ fn extract_latin_ranges(char_widths: &HashMap<u32, u16>) -> Vec<LatinRange> {
                 start: char::from_u32(start).unwrap_or(' '),
                 end: char::from_u32(end).unwrap_or(' '),
                 widths,
-            });
+            };
         }
     }
     result
@@ -667,7 +667,7 @@ fn generate_rust_source(metrics: &[FontMetric]) -> String {
     out.push_str("        for range in self.latin_ranges {\n");
     out.push_str("            if code >= range.start && code <= range.end {\n");
     out.push_str("                let w = range.widths[(code - range.start) as usize];\n");
-    out.push_str("                return if w > 0 { Some(w) } else { None };\n");
+    out.push_str("                return if w > 0 { Some(w) } else { None });\n");
     out.push_str("            }\n");
     out.push_str("        }\n");
     out.push_str("        None\n");
@@ -935,7 +935,7 @@ fn main() {
                 (None, Some(_)) => std::cmp::Ordering::Greater,
                 (None, None) => a.family_name.cmp(&b.family_name).then(a.bold.cmp(&b.bold)).then(a.italic.cmp(&b.italic)),
             }
-        });
+        };
         println!("중복 제거: {} → {} 엔트리", before_dedup, deduped.len());
 
         if let Some(output) = output_path {

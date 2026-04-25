@@ -48,7 +48,7 @@ impl crate::wmf::parser::META_ESCAPE {
                     "The byte_count `{byte_count:#010X}` field must be same \
                      as `{expected_byte_count:#010X}`",
                 ),
-            });
+            };
         }
 
         if comment_identifier != 0x43464D57 {
@@ -57,7 +57,7 @@ impl crate::wmf::parser::META_ESCAPE {
                     "The comment_identifier `{comment_identifier:#010X}` \
                      field must be `0x43464D57`",
                 ),
-            });
+            };
         }
 
         if comment_type != 0x00000001 {
@@ -66,7 +66,7 @@ impl crate::wmf::parser::META_ESCAPE {
                     "The comment_type `{comment_type:#010X}` field must be \
                      `0x00000001`",
                 ),
-            });
+            };
         }
 
         if version != 0x00010000 {
@@ -74,7 +74,7 @@ impl crate::wmf::parser::META_ESCAPE {
                 cause: format!(
                     "The version `{version:#010X}` field must be `0x00010000`"
                 ),
-            });
+            };
         }
 
         if flags != 0x00000000 {
@@ -82,7 +82,7 @@ impl crate::wmf::parser::META_ESCAPE {
                 cause: format!(
                     "The flags `{version:#010X}` field must be `0x00000000`",
                 ),
-            });
+            };
         }
 
         if current_record_size > 8192 {
@@ -91,7 +91,7 @@ impl crate::wmf::parser::META_ESCAPE {
                     "The current_record_size `{current_record_size}` field \
                      must be less than or equal to `8192`",
                 ),
-            });
+            };
         }
 
         let (enhanced_metafile_data, c) = crate::wmf::parser::read_variable(

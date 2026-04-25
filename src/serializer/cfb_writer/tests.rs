@@ -130,7 +130,7 @@ fn test_full_roundtrip_uncompressed() {
         alt_type: 0,
         alt_name: None,
         default_name: None,
-    });
+    };
     doc_info.char_shapes.push(CharShape {
         font_ids: [0; 7],
         ratios: [100; 7],
@@ -145,16 +145,16 @@ fn test_full_roundtrip_uncompressed() {
         shadow_color: 0x00B2B2B2,
         strike_color: 0,
         ..Default::default()
-    });
+    };
     doc_info.para_shapes.push(ParaShape {
         line_spacing: 160,
         ..Default::default()
-    });
+    };
     doc_info.styles.push(Style {
         local_name: "바탕글".to_string(),
         english_name: "Normal".to_string(),
         ..Default::default()
-    });
+    };
 
     let original = Document {
         header: FileHeader {
@@ -968,7 +968,7 @@ fn test_cfb_structure_comparison() {
                 let clsid_nonzero = clsid.iter().any(|&b| b != 0);
                 eprintln!("    [{}] '{}' type={} color={} start={} size={} L/R/C={}/{}/{}{}",
                     entry_idx, name, obj_type, color, start, size, left, right, child,
-                    if clsid_nonzero { format!(" CLSID={:02X?}", clsid) } else { String::new() });
+                    if clsid_nonzero { format!(" CLSID={:02X?}", clsid) } else { String::new() };
                 let ctime = &e[100..108];
                 let mtime = &e[108..116];
                 let has_time = ctime.iter().any(|&b| b != 0) || mtime.iter().any(|&b| b != 0);

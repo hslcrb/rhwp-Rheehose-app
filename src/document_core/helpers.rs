@@ -201,41 +201,41 @@ pub(crate) fn navigate_path_to_table<'a>(
     match path {
         [PathSegment::Paragraph(pi), PathSegment::Control(ci)] => {
             let para = paragraphs.get_mut(*pi).ok_or_else(|| {
-                HwpError::RenderError(format!("문단 인덱스 {} 범위 초과", pi))
+                HwpError::RenderError { message: format!("문단 인덱스 {} 범위 초과", pi) }
             })?;
             match para.controls.get_mut(*ci) {
                 Some(Control::Table(t)) => Ok(t),
-                Some(_) => Err(HwpError::RenderError(
-                    "지정된 컨트롤이 표가 아닙니다".to_string(),
-                )),
-                None => Err(HwpError::RenderError(format!(
-                    "컨트롤 인덱스 {} 범위 초과", ci
-                ))),
+                Some(_) => Err(HwpError::RenderError {
+                    message: "지정된 컨트롤이 표가 아닙니다".to_string(),
+                }),
+                None => Err(HwpError::RenderError {
+                    message: format!("컨트롤 인덱스 {} 범위 초과", ci),
+                }),
             }
         }
         [PathSegment::Paragraph(pi), PathSegment::Control(ci), PathSegment::Cell(row, col), rest @ ..] =>
         {
             let para = paragraphs.get_mut(*pi).ok_or_else(|| {
-                HwpError::RenderError(format!("문단 인덱스 {} 범위 초과", pi))
+                HwpError::RenderError { message: format!("문단 인덱스 {} 범위 초과", pi) }
             })?;
             match para.controls.get_mut(*ci) {
                 Some(Control::Table(t)) => {
                     let cell = t.cell_at_mut(*row, *col).ok_or_else(|| {
-                        HwpError::RenderError(format!(
-                            "셀({},{}) 접근 실패", row, col
-                        ))
+                        HwpError::RenderError {
+                            message: format!("셀({},{}) 접근 실패", row, col),
+                        }
                     })?;
                     navigate_path_to_table(&mut cell.paragraphs, rest)
                 }
-                Some(_) => Err(HwpError::RenderError(
-                    "지정된 컨트롤이 표가 아닙니다".to_string(),
-                )),
-                None => Err(HwpError::RenderError(format!(
-                    "컨트롤 인덱스 {} 범위 초과", ci
-                ))),
+                Some(_) => Err(HwpError::RenderError {
+                    message: "지정된 컨트롤이 표가 아닙니다".to_string(),
+                }),
+                None => Err(HwpError::RenderError {
+                    message: format!("컨트롤 인덱스 {} 범위 초과", ci),
+                }),
             }
         }
-        _ => Err(HwpError::RenderError("잘못된 경로 형식".to_string())),
+        _ => Err(HwpError::RenderError { message: "잘못된 경로 형식".to_string() }),
     }
 }
 
@@ -630,13 +630,13 @@ pub(crate) fn json_f64(json: &str, key: &str) -> Option<f64> {
 pub(crate) fn json_usize(json: &str, key: &str) -> Result<usize, HwpError> {
     let pattern = format!("\"{}\":", key);
     let pos = json.find(&pattern)
-        .ok_or_else(|| HwpError::RenderError(format!("JSON 필드 '{}' 없음", key)))?;
+        .ok_or_else(|| HwpError::RenderError { message: format!("JSON 필드 '{}' 없음", key) })?;
     let rest = &json[pos + pattern.len()..];
     let num_str: String = rest.trim_start().chars()
         .take_while(|c| c.is_ascii_digit())
         .collect();
     num_str.parse::<usize>()
-        .map_err(|_| HwpError::RenderError(format!("JSON 필드 '{}' 값 파싱 실패", key)))
+        .map_err(|_| HwpError::RenderError { message: format!("JSON 필드 '{}' 값 파싱 실패", key) })
 }
 
 /// JSON 문자열 이스케이프

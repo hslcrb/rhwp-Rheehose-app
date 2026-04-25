@@ -130,7 +130,7 @@ impl DocumentCore {
             .and_then(|t: &mut Table| t.cells.get_mut(cell_idx))
             .and_then(|cell| cell.paragraphs.get_mut(cell_para))
             .and_then(|p| p.controls.get_mut(form_ci))
-            .and_then(|c| if let Control::Form(ref mut f) = c { Some(f) } else { None });
+            .and_then(|c| if let Control::Form(ref mut f) = c { Some(f) } else { None };
 
         match form {
             Some(f) => {

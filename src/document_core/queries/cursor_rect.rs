@@ -91,7 +91,7 @@ impl DocumentCore {
                             x: node.bbox.x + x_in_run,
                             y: caret_y,
                             height: font_size,
-                        });
+                        };
                         }
                     }
                 }
@@ -113,7 +113,7 @@ impl DocumentCore {
                                 x: node.bbox.x,
                                 y: caret_y,
                                 height: font_size.max(10.0),
-                            });
+                            };
                         }
                         if marker_pos + 1 == offset {
                             // 마커 오른쪽 (마커 뒤)
@@ -122,7 +122,7 @@ impl DocumentCore {
                                 x: node.bbox.x + node.bbox.width,
                                 y: caret_y,
                                 height: font_size.max(10.0),
-                            });
+                            };
                         }
                     }
                 }
@@ -162,7 +162,7 @@ impl DocumentCore {
                         matches!(ctrl, Control::Shape(_) | Control::Picture(_) | Control::Equation(_))
                         && ctrl_positions.get(*ci).copied() == Some(char_offset)
                         && char_offset != text_len
-                    });
+                    };
                     // 텍스트 범위 밖이지만 navigable 범위 내 (도형이 텍스트 뒤에 있을 때)
                     let beyond_ctrl = if char_offset > text_len && char_offset <= navigable_text_len(para) {
                         para.controls.iter().enumerate().find(|(ci, ctrl)| {
@@ -376,7 +376,7 @@ impl DocumentCore {
                         w: node.bbox.width,
                         h: node.bbox.height,
                         has_meta,
-                    });
+                    };
                 }
             }
             if let RenderNodeType::TextRun(ref text_run) = node.node_type {
@@ -403,7 +403,7 @@ impl DocumentCore {
                             cell_context: text_run.cell_context.clone(),
                             is_textbox: false,
                             column_index: col,
-                        });
+                        };
                     } else {
                         // char_start: None → 안내문 TextRun
                         guide_runs.push(GuideRunInfo {
@@ -414,7 +414,7 @@ impl DocumentCore {
                             bbox_w: node.bbox.width,
                             bbox_h: node.bbox.height,
                             cell_context: text_run.cell_context.clone(),
-                        });
+                        };
                     }
                 }
             }
@@ -560,7 +560,7 @@ impl DocumentCore {
                                     } else {
                                         (offset as i64 - r.char_start as i64).abs()
                                     }
-                                });
+                                };
                             if let Some((idx, _)) = nearest {
                                 return Ok(format_hit(&runs[idx], offset, page_num));
                             }
@@ -648,7 +648,7 @@ impl DocumentCore {
                         .min_by_key(|r| {
                             let mid_y = r.bbox_y + r.bbox_h / 2.0;
                             ((y - mid_y).abs() * 1000.0) as i64
-                        });
+                        };
                     if let Some(r) = nearest {
                         best = r;
                         best_offset = if x < r.bbox_x { r.char_start } else { r.char_start + r.char_count };
@@ -814,14 +814,13 @@ impl DocumentCore {
     ) -> Result<(u16, u16, f64, f64, f64), HwpError> {
         use crate::model::control::Control;
         let para = self.document.sections.get(section_idx)
-            .and_then(|s| s.paragraphs.get(parent_para_idx))
-            .ok_or_else(|| HwpError::RenderError("문단 없음".to_string()))?;
+            .ok_or_else(|| HwpError::RenderError { message: "문단 없음".to_string() });
         let ctrl = para.controls.get(control_idx)
-            .ok_or_else(|| HwpError::RenderError("컨트롤 없음".to_string()))?;
+            .ok_or_else(|| HwpError::RenderError { message: "컨트롤 없음".to_string() });
         match ctrl {
             Control::Table(ref tbl) => {
                 let cell = tbl.cells.get(cell_idx)
-                    .ok_or_else(|| HwpError::RenderError("셀 없음".to_string()))?;
+                    .ok_or_else(|| HwpError::RenderError { message: "셀 없음".to_string() });
                 let dpi_scale = 96.0 / 7200.0;
                 Ok((
                     cell.col,
@@ -835,7 +834,7 @@ impl DocumentCore {
                 // 글상자/그림 캡션은 패딩 없음
                 Ok((0, 0, 0.0, 0.0, 0.0))
             }
-            _ => Err(HwpError::RenderError("표 컨트롤이 아닙니다".to_string())),
+            _ => Err(HwpError::RenderError { message: "표 컨트롤이 아닙니다".to_string() }),
         }
     }
 
@@ -1089,7 +1088,7 @@ impl DocumentCore {
 
         let path = Self::parse_cell_path(path_json)?;
         if path.is_empty() {
-            return Err(HwpError::RenderError("경로가 비어있습니다".to_string()));
+            return Err(HwpError::RenderError { message: "경로가 비어있습니다".to_string() });
         }
 
         let last = path.last().unwrap();
@@ -1262,7 +1261,6 @@ impl DocumentCore {
                                         a.control_index == b.0 && a.cell_index == b.1 && a.cell_para_index == b.2
                                     } else {
                                         // 마지막 경로: control_index만 매칭 (이 표의 모든 셀 포함)
-                                        a.control_index == b.0
                                     }
                                 })
                         });
@@ -1340,7 +1338,7 @@ impl DocumentCore {
 
         let path = Self::parse_cell_path(path_json)?;
         if path.is_empty() {
-            return Err(HwpError::RenderError("경로가 비어있습니다".to_string()));
+            return Err(HwpError::RenderError { message: "경로가 비어있습니다".to_string() });
         }
 
         let cell = self.resolve_cell_by_path(section_idx, parent_para_idx, &path)?;
@@ -1348,7 +1346,7 @@ impl DocumentCore {
         let current_para_idx = path.last().unwrap().2;  // cellParaIndex
 
         let para = cell.paragraphs.get(current_para_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("셀문단 {} 범위 초과", current_para_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("셀문단 {} 범위 초과", current_para_idx) });
 
         // preferredX 결정
         let actual_px = if preferred_x < 0.0 {
@@ -1659,7 +1657,7 @@ impl DocumentCore {
                                 x: node.bbox.x + x_in_run,
                                 y: caret_y,
                                 height: font_size,
-                            });
+                            };
                         }
                     }
                 }
@@ -1868,7 +1866,7 @@ impl DocumentCore {
             } else {
                 matches!(child.node_type, RenderNodeType::Footer)
             }
-        });
+        };
         let hf_node = match hf_node {
             Some(n) => n,
             None => return Ok("{\"hit\":false}".to_string()),
@@ -1906,7 +1904,7 @@ impl DocumentCore {
                             bbox_h: node.bbox.height,
                             baseline: text_run.baseline,
                             font_size: text_run.style.font_size,
-                        });
+                        };
                     }
                 }
             }
@@ -2074,7 +2072,7 @@ impl DocumentCore {
 
         let fn_node = tree.root.children.iter().find(|child| {
             matches!(child.node_type, RenderNodeType::FootnoteArea)
-        });
+        };
         let fn_node = match fn_node {
             Some(n) => n,
             None => return Ok("{\"hit\":false}".to_string()),
@@ -2129,7 +2127,7 @@ impl DocumentCore {
                                 bbox_h: node.bbox.height,
                                 baseline: text_run.baseline,
                                 font_size: text_run.style.font_size,
-                            });
+                            };
                         } else {
                             // 번호 TextRun (char_start: None)
                             number_runs.push(FnNumberInfo {
@@ -2141,7 +2139,7 @@ impl DocumentCore {
                                 bbox_h: node.bbox.height,
                                 font_size: text_run.style.font_size,
                                 baseline: text_run.baseline,
-                            });
+                            };
                         }
                     }
                 }
@@ -2164,7 +2162,7 @@ impl DocumentCore {
                 let da = (y - (a.bbox_y + a.bbox_h / 2.0)).abs();
                 let db = (y - (b.bbox_y + b.bbox_h / 2.0)).abs();
                 da.partial_cmp(&db).unwrap_or(std::cmp::Ordering::Equal)
-            });
+            };
             if let Some(nr) = closest_num {
                 let ascent = nr.font_size * 0.8;
                 let cursor_y = nr.bbox_y + nr.baseline - ascent;
@@ -2277,10 +2275,10 @@ impl DocumentCore {
 
         let fn_node = tree.root.children.iter().find(|child| {
             matches!(child.node_type, RenderNodeType::FootnoteArea)
-        });
+        };
         let fn_node = match fn_node {
             Some(n) => n,
-            None => return Err(HwpError::RenderError("각주 영역을 찾을 수 없습니다".to_string())),
+            None => return Err(HwpError::RenderError { message: "각주 영역을 찾을 수 없습니다".to_string() },
         };
 
         let marker_para = usize::MAX - 2000 - fn_para_idx;
@@ -2313,7 +2311,7 @@ impl DocumentCore {
                             bbox_h: node.bbox.height,
                             baseline: tr.baseline,
                             font_size: tr.style.font_size,
-                        });
+                        };
                     }
                 }
             }
@@ -2398,9 +2396,9 @@ impl DocumentCore {
 
         let (section_idx, local_page) = self.find_section_for_page(page_num);
         let pr = self.pagination.get(section_idx)
-            .ok_or_else(|| HwpError::RenderError("구역을 찾을 수 없습니다".to_string()))?;
+            .ok_or_else(|| HwpError::RenderError { message: "구역을 찾을 수 없습니다".to_string() })?;
         let page = pr.pages.get(local_page)
-            .ok_or_else(|| HwpError::RenderError("페이지를 찾을 수 없습니다".to_string()))?;
+            .ok_or_else(|| HwpError::RenderError { message: "페이지를 찾을 수 없습니다".to_string() })?;
 
         let fn_ref = page.footnotes.get(footnote_index)
             .ok_or_else(|| HwpError::RenderError(format!(

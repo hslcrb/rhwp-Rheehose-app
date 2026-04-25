@@ -406,7 +406,7 @@ fn make_cellbreak_table(row_count: u16, col_count: u16, cell_height: u32) -> cra
                 width: 5000,
                 paragraphs: vec![para],
                 ..Default::default()
-            });
+            };
         }
     }
     Table {
@@ -590,7 +590,7 @@ fn test_table_split_10rows_at_page_bottom() {
             cells.push(Cell {
                 row: r, col: c, row_span: 1, col_span: 1,
                 height: 6000, width: 5000, ..Default::default()
-            });
+            };
         }
     }
     let mut table_para = Paragraph::default();
@@ -651,7 +651,7 @@ fn test_table_split_50rows_multi_page() {
         cells.push(Cell {
             row: r, col: 0, row_span: 1, col_span: 1,
             height: 4000, width: 10000, ..Default::default()
-        });
+        };
     }
     let mut table_para = Paragraph::default();
     table_para.controls.push(Control::Table(Box::new(Table {
@@ -717,7 +717,7 @@ fn test_table_split_with_nested_table() {
                 ..Default::default()
             }],
             ..Default::default()
-        });
+        };
     }
     let nested_table = Table {
         row_count: 10, col_count: 1, cells: nested_cells, ..Default::default()
@@ -801,7 +801,7 @@ fn test_table_height_within_body_area() {
                 cells.push(Cell {
                     row: r, col: c, row_span: 1, col_span: 1,
                     height: 10000, width: 5000, ..Default::default()
-                });
+                };
             }
         }
         let mut table_para = Paragraph::default();

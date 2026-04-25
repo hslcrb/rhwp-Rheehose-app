@@ -41,7 +41,7 @@ impl RGBQuad {
         if reserved != 0x00 {
             return Err(crate::wmf::parser::ParseError::UnexpectedPattern {
                 cause: "The reserved field must be zero".to_owned(),
-            });
+            };
         }
 
         Ok((

@@ -27,14 +27,14 @@ impl PitchAndFamily {
         else {
             return Err(crate::wmf::parser::ParseError::UnexpectedEnumValue {
                 cause: format!("unexpected value as FamilyFont: {family:#04X}"),
-            });
+            };
         };
 
         let pitch = byte & 0b00000011;
         let Some(pitch) = crate::wmf::parser::PitchFont::from_repr(pitch) else {
             return Err(crate::wmf::parser::ParseError::UnexpectedEnumValue {
                 cause: format!("unexpected value as PitchFont: {pitch:#04X}"),
-            });
+            };
         };
 
         Ok((Self { family, pitch }, consumed_bytes))

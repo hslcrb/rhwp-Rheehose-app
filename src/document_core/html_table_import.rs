@@ -137,7 +137,7 @@ impl DocumentCore {
                         content_html,
                         is_header: is_th,
                         vertical_align,
-                    });
+                    };
 
                     td_pos = content_end + close_tag.len();
                 } else {
@@ -208,7 +208,7 @@ impl DocumentCore {
                     row_span: cell.row_span,
                     parsed_row: ri,
                     parsed_col: ci,
-                });
+                };
 
                 let end_col = col + cell.col_span;
                 if end_col > actual_col_count {
@@ -330,7 +330,7 @@ impl DocumentCore {
                     cp_para.char_shapes.push(crate::model::paragraph::CharShapeRef {
                         start_pos: 0,
                         char_shape_id: base_cs_id,
-                    });
+                    };
                 }
 
                 // raw_header_extra에 instance_id = 0x80000000 설정
@@ -372,7 +372,7 @@ impl DocumentCore {
                         segment_width: seg_w,
                         tag: line_tag,
                         ..Default::default()
-                    });
+                    };
                 } else {
                     for ls in &mut cp_para.line_segs {
                         if ls.line_height < font_size {
@@ -426,7 +426,7 @@ impl DocumentCore {
                 vertical_align: v_align,
                 raw_list_extra,
                 ..Default::default()
-            });
+            };
         }
 
         // 행 우선 순서로 정렬
@@ -796,7 +796,7 @@ impl DocumentCore {
             id: new_bin_id,
             data: decoded.clone(),
             extension: detect_clipboard_image_mime(&decoded).split('/').nth(1).unwrap_or("png").to_string(),
-        });
+        };
 
         // width/height 추출
         let width = parse_html_attr_f64(img_tag, "width").unwrap_or(200.0);

@@ -27,7 +27,7 @@ impl crate::wmf::parser::META_ESCAPE {
                     "The byte_count field `{byte_count:#06X}` field must be \
                      greater than or equal to size field `{size:#06X}`",
                 ),
-            });
+            };
         }
 
         let data_length = size

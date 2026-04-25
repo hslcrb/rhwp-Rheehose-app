@@ -19,7 +19,7 @@ fn test_svg_draw_text() {
         font_size: 16.0,
         bold: true,
         ..Default::default()
-    });
+    };
     let output = renderer.output();
     assert!(output.contains("<text"));
     assert!(output.contains("font-weight=\"bold\""));
@@ -34,7 +34,7 @@ fn test_svg_draw_rect() {
         stroke_color: Some(0x00000000),
         stroke_width: 2.0,
         ..Default::default()
-    });
+    };
     let output = renderer.output();
     assert!(output.contains("<rect"));
     assert!(output.contains("fill=\"#0000ff\"")); // BGR → RGB
@@ -65,12 +65,12 @@ fn test_svg_text_decoration() {
         font_size: 16.0,
         underline: UnderlineType::Bottom,
         ..Default::default()
-    });
+    };
     renderer.draw_text("취소", 10.0, 40.0, &TextStyle {
         font_size: 16.0,
         strikethrough: true,
         ..Default::default()
-    });
+    };
     let output = renderer.output();
     // 밑줄: <line> 요소로 출력
     let underline_count = output.matches("y1=\"22\"").count(); // y + 2.0
@@ -89,7 +89,7 @@ fn test_svg_text_ratio() {
         font_size: 16.0,
         ratio: 0.8,
         ..Default::default()
-    });
+    };
     let output = renderer.output();
     // 첫 문자 '장': translate(50,100) scale(0.8000,1)
     assert!(output.contains("transform=\"translate(50,100) scale(0.8000,1)\""));
@@ -107,7 +107,7 @@ fn test_svg_text_ratio_default() {
         font_size: 16.0,
         ratio: 1.0,
         ..Default::default()
-    });
+    };
     let output = renderer.output();
     assert!(!output.contains("transform="));
     // 첫 문자는 x=50

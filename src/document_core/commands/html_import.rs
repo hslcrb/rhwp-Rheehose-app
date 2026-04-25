@@ -17,10 +17,10 @@ impl DocumentCore {
         html: &str,
     ) -> Result<String, HwpError> {
         if section_idx >= self.document.sections.len() {
-            return Err(HwpError::RenderError(format!("구역 {} 범위 초과", section_idx)));
+            return Err(HwpError::RenderError { message: format!("구역 {} 범위 초과", section_idx) });
         }
         if para_idx >= self.document.sections[section_idx].paragraphs.len() {
-            return Err(HwpError::RenderError(format!("문단 {} 범위 초과", para_idx)));
+            return Err(HwpError::RenderError { message: format!("문단 {} 범위 초과", para_idx) });
         }
 
         // HTML 파싱 → 문단 목록 생성
@@ -173,19 +173,19 @@ impl DocumentCore {
         // 셀 접근 검증
         let cell_para_count = {
             let section = self.document.sections.get(section_idx)
-                .ok_or_else(|| HwpError::RenderError(format!("구역 {} 범위 초과", section_idx)))?;
+                .ok_or_else(|| HwpError::RenderError { message: format!("구역 {} 범위 초과", section_idx) })?;
             let para = section.paragraphs.get(parent_para_idx)
-                .ok_or_else(|| HwpError::RenderError(format!("문단 {} 범위 초과", parent_para_idx)))?;
+                .ok_or_else(|| HwpError::RenderError { message: format!("문단 {} 범위 초과", parent_para_idx) })?;
             let table = match para.controls.get(control_idx) {
                 Some(Control::Table(t)) => t,
-                _ => return Err(HwpError::RenderError("표가 아님".to_string())),
+                _ => return Err(HwpError::RenderError { message: "표가 아님".to_string() },
             };
             let cell = table.cells.get(cell_idx)
-                .ok_or_else(|| HwpError::RenderError(format!("셀 {} 범위 초과", cell_idx)))?;
+                .ok_or_else(|| HwpError::RenderError { message: format!("셀 {} 범위 초과", cell_idx) })?;
             cell.paragraphs.len()
         };
         if cell_para_idx >= cell_para_count {
-            return Err(HwpError::RenderError(format!("셀 문단 {} 범위 초과", cell_para_idx)));
+            return Err(HwpError::RenderError { message: format!("셀 문단 {} 범위 초과", cell_para_idx) });
         }
 
         let parsed_paras = self.parse_html_to_paragraphs(html);
@@ -636,7 +636,7 @@ impl DocumentCore {
             para.char_shapes.push(crate::model::paragraph::CharShapeRef {
                 start_pos: utf16_pos,
                 char_shape_id: *char_shape_id,
-            });
+            };
         }
     }
 

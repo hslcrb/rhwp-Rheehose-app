@@ -89,7 +89,7 @@ where
                              match any RecordType"
                         ),
                     },
-                });
+                };
             };
 
             match record_type {

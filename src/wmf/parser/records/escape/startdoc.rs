@@ -16,7 +16,7 @@ impl crate::wmf::parser::META_ESCAPE {
                     "The byte_count `{byte_count}` field must be less than \
                      `260`",
                 ),
-            });
+            };
         }
 
         let (doc_name, c) =

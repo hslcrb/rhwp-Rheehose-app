@@ -38,7 +38,7 @@ impl DocumentCore {
     pub fn from_bytes(data: &[u8]) -> Result<DocumentCore, HwpError> {
         let source_format = crate::parser::detect_format(data);
         let mut document = crate::parser::parse_document(data)
-            .map_err(|e| HwpError::InvalidFile(e.to_string()))?;
+            .map_err(|e| HwpError::InvalidFile { message: e.to_string() })?;
 
         let styles = resolve_styles(&document.doc_info, DEFAULT_DPI);
 
@@ -438,7 +438,7 @@ impl DocumentCore {
         const BLANK_TEMPLATE: &[u8] = include_bytes!("../../../saved/blank2010.hwp");
 
         let document = crate::parser::parse_hwp(BLANK_TEMPLATE)
-            .map_err(|e| HwpError::InvalidFile(e.to_string()))?;
+            .map_err(|e| HwpError::InvalidFile { message: e.to_string() })?;
 
         let styles = resolve_styles(&document.doc_info, self.dpi);
         let composed = document.sections.iter().map(|s| compose_section(s)).collect();
@@ -466,7 +466,7 @@ impl DocumentCore {
     /// Document IR을 HWP 5.0 CFB 바이너리로 직렬화 (네이티브 에러 타입)
     pub fn export_hwp_native(&self) -> Result<Vec<u8>, HwpError> {
         crate::serializer::serialize_document(&self.document)
-            .map_err(|e| HwpError::RenderError(e.to_string()))
+            .map_err(|e| HwpError::RenderError { message: e.to_string() })
     }
 
     /// HWPX 출처 IR 을 HWP 호환 형태로 변환 후 HWP 5.0 CFB 바이너리로 직렬화한다 (#178).
@@ -516,7 +516,7 @@ impl DocumentCore {
     /// Document IR을 HWPX(ZIP+XML)로 직렬화 (네이티브 에러 타입)
     pub fn export_hwpx_native(&self) -> Result<Vec<u8>, HwpError> {
         crate::serializer::serialize_hwpx(&self.document)
-            .map_err(|e| HwpError::RenderError(e.to_string()))
+            .map_err(|e| HwpError::RenderError { message: e.to_string() })
     }
 
     /// 배포용(읽기전용) 문서를 편집 가능한 일반 문서로 변환한다 (네이티브 에러 타입).
@@ -578,7 +578,7 @@ impl DocumentCore {
     /// 스타일 재해소 + 문단 구성 + 페이지네이션까지 수행.
     pub fn restore_snapshot_native(&mut self, id: u32) -> Result<String, HwpError> {
         let idx = self.snapshot_store.iter().position(|(sid, _)| *sid == id)
-            .ok_or_else(|| HwpError::RenderError(format!("스냅샷 {} 없음", id)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("스냅샷 {} 없음", id) })?;
         let (_, doc) = self.snapshot_store[idx].clone();
         self.document = doc;
         // 캐시 전체 재구성
@@ -611,12 +611,12 @@ impl DocumentCore {
         use crate::renderer::hwpunit_to_px;
 
         let section = self.document.sections.get(section_idx)
-            .ok_or_else(|| HwpError::InvalidFile(format!("section {} not found", section_idx)))?;
+            .ok_or_else(|| HwpError::InvalidFile { message: format!("section {} not found", section_idx) })?;
         let para = section.paragraphs.get(para_idx)
-            .ok_or_else(|| HwpError::InvalidFile(format!("para {} not found", para_idx)))?;
+            .ok_or_else(|| HwpError::InvalidFile { message: format!("para {} not found", para_idx) })?;
         let composed = self.composed.get(section_idx)
             .and_then(|s| s.get(para_idx))
-            .ok_or_else(|| HwpError::InvalidFile("composed paragraph not found".into()))?;
+            .ok_or_else(|| HwpError::InvalidFile { message: "composed paragraph not found".into() })?;
 
         let text_preview: String = para.text.chars().take(30).collect();
 

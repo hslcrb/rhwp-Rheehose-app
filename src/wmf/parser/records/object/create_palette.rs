@@ -44,7 +44,7 @@ impl META_CREATEPALETTE {
                      but `{:#06X}`",
                     palette.start
                 ),
-            });
+            };
         }
 
         crate::wmf::parser::records::consume_remaining_bytes(buf, record_size)?;

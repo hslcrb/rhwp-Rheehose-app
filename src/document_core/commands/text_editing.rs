@@ -623,15 +623,15 @@ impl DocumentCore {
     ) -> Result<&mut crate::model::table::Cell, HwpError> {
         let section = &mut self.document.sections[section_idx];
         let para = section.paragraphs.get_mut(parent_para_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("부모 문단 인덱스 {} 범위 초과", parent_para_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("부모 문단 인덱스 {} 범위 초과", parent_para_idx) })?;
         let ctrl = para.controls.get_mut(control_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("컨트롤 인덱스 {} 범위 초과", control_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("컨트롤 인덱스 {} 범위 초과", control_idx) })?;
         match ctrl {
             Control::Table(ref mut table) => {
                 table.cells.get_mut(cell_idx)
-                    .ok_or_else(|| HwpError::RenderError(format!("셀 인덱스 {} 범위 초과", cell_idx)))
+                    .ok_or_else(|| HwpError::RenderError { message: format!("셀 인덱스 {} 범위 초과", cell_idx) })
             }
-            _ => Err(HwpError::RenderError("테이블 컨트롤이 아닙니다".to_string())),
+            _ => Err(HwpError::RenderError { message: "테이블 컨트롤이 아닙니다".to_string() }),
         }
     }
 
@@ -794,10 +794,10 @@ impl DocumentCore {
         use crate::model::paragraph::ColumnBreakType;
 
         if section_idx >= self.document.sections.len() {
-            return Err(HwpError::RenderError(format!("구역 인덱스 {} 범위 초과", section_idx)));
+            return Err(HwpError::RenderError { message: format!("구역 인덱스 {} 범위 초과", section_idx) });
         }
         if para_idx >= self.document.sections[section_idx].paragraphs.len() {
-            return Err(HwpError::RenderError(format!("문단 인덱스 {} 범위 초과", para_idx)));
+            return Err(HwpError::RenderError { message: format!("문단 인덱스 {} 범위 초과", para_idx) });
         }
 
         self.document.sections[section_idx].raw_stream = None;
@@ -847,7 +847,7 @@ impl DocumentCore {
         use crate::model::page::{ColumnType, ColumnDirection};
 
         if section_idx >= self.document.sections.len() {
-            return Err(HwpError::RenderError(format!("구역 인덱스 {} 범위 초과", section_idx)));
+            return Err(HwpError::RenderError { message: format!("구역 인덱스 {} 범위 초과", section_idx) });
         }
 
         let col_type = match column_type {
@@ -1509,7 +1509,7 @@ impl DocumentCore {
             Some(Control::Table(table)) => {
                 if cell_idx == 65534 {
                     let cap = table.caption.as_ref().ok_or_else(|| {
-                        HwpError::RenderError("표에 캡션이 없습니다".to_string())
+                        HwpError::RenderError { message: "표에 캡션이 없습니다".to_string() }
                     })?;
                     return Ok(cap.paragraphs.len());
                 }
@@ -1522,13 +1522,13 @@ impl DocumentCore {
             }
             Some(Control::Shape(shape)) => {
                 let text_box = get_textbox_from_shape(shape).ok_or_else(|| {
-                    HwpError::RenderError("도형에 글상자가 없습니다".to_string())
+                    HwpError::RenderError { message: "도형에 글상자가 없습니다".to_string() }
                 })?;
                 Ok(text_box.paragraphs.len())
             }
             Some(Control::Picture(pic)) => {
                 let caption = pic.caption.as_ref().ok_or_else(|| {
-                    HwpError::RenderError("그림에 캡션이 없습니다".to_string())
+                    HwpError::RenderError { message: "그림에 캡션이 없습니다".to_string() }
                 })?;
                 Ok(caption.paragraphs.len())
             }
@@ -1992,12 +1992,12 @@ impl DocumentCore {
         path: &[(usize, usize, usize)],
     ) -> Result<&mut Paragraph, HwpError> {
         if path.is_empty() {
-            return Err(HwpError::RenderError("경로가 비어있습니다".to_string()));
+            return Err(HwpError::RenderError { message: "경로가 비어있습니다".to_string() });
         }
         let section = self.document.sections.get_mut(section_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("구역 {} 범위 초과", section_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("구역 {} 범위 초과", section_idx) })?;
         let mut para: &mut Paragraph = section.paragraphs.get_mut(parent_para_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("문단 {} 범위 초과", parent_para_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("문단 {} 범위 초과", parent_para_idx) })?;
 
         for (i, &(ctrl_idx, cell_idx, cell_para_idx)) in path.iter().enumerate() {
             let table = match para.controls.get_mut(ctrl_idx) {
@@ -2093,29 +2093,29 @@ impl DocumentCore {
 
         // 셀에 접근하여 문단 분할
         let section = self.document.sections.get_mut(section_idx)
-            .ok_or_else(|| HwpError::RenderError("구역 범위 초과".to_string()))?;
+            .ok_or_else(|| HwpError::RenderError { message: "구역 범위 초과".to_string() })?;
         let mut para: &mut Paragraph = section.paragraphs.get_mut(parent_para_idx)
-            .ok_or_else(|| HwpError::RenderError("문단 범위 초과".to_string()))?;
+            .ok_or_else(|| HwpError::RenderError { message: "문단 범위 초과".to_string() })?;
 
         // path를 따라 마지막 셀까지 진입
         for (i, &(ctrl_idx, cell_idx, _cpi)) in path.iter().enumerate() {
             let table = match para.controls.get_mut(ctrl_idx) {
                 Some(Control::Table(t)) => t.as_mut(),
-                _ => return Err(HwpError::RenderError("경로: 표가 아닙니다".to_string())),
+                _ => return Err(HwpError::RenderError { message: "경로: 표가 아닙니다".to_string() }),
             };
             let cell = table.cells.get_mut(cell_idx)
-                .ok_or_else(|| HwpError::RenderError("셀 범위 초과".to_string()))?;
+                .ok_or_else(|| HwpError::RenderError { message: "셀 범위 초과".to_string() })?;
             if i == path.len() - 1 {
                 // 이 셀에서 문단 분할
                 if cell_para_idx >= cell.paragraphs.len() {
-                    return Err(HwpError::RenderError("셀문단 범위 초과".to_string()));
+                    return Err(HwpError::RenderError { message: "셀문단 범위 초과".to_string() });
                 }
                 let new_para = cell.paragraphs[cell_para_idx].split_at(char_offset);
                 cell.paragraphs.insert(cell_para_idx + 1, new_para);
                 break;
             }
             para = cell.paragraphs.get_mut(_cpi)
-                .ok_or_else(|| HwpError::RenderError("셀문단 범위 초과".to_string()))?;
+                .ok_or_else(|| HwpError::RenderError { message: "셀문단 범위 초과".to_string() })?;
         }
 
         let outer_ctrl = path[0].0;
@@ -2141,25 +2141,25 @@ impl DocumentCore {
         let last = path.last().unwrap();
         let cell_para_idx = last.2;
         if cell_para_idx == 0 {
-            return Err(HwpError::RenderError("첫 문단은 병합할 수 없습니다".to_string()));
+            return Err(HwpError::RenderError { message: "첫 문단은 병합할 수 없습니다".to_string() });
         }
 
         let section = self.document.sections.get_mut(section_idx)
-            .ok_or_else(|| HwpError::RenderError("구역 범위 초과".to_string()))?;
+            .ok_or_else(|| HwpError::RenderError { message: "구역 범위 초과".to_string() })?;
         let mut para: &mut Paragraph = section.paragraphs.get_mut(parent_para_idx)
-            .ok_or_else(|| HwpError::RenderError("문단 범위 초과".to_string()))?;
+            .ok_or_else(|| HwpError::RenderError { message: "문단 범위 초과".to_string() })?;
 
         let mut merge_point = 0usize;
         for (i, &(ctrl_idx, cell_idx, _cpi)) in path.iter().enumerate() {
             let table = match para.controls.get_mut(ctrl_idx) {
                 Some(Control::Table(t)) => t.as_mut(),
-                _ => return Err(HwpError::RenderError("경로: 표가 아닙니다".to_string())),
+                _ => return Err(HwpError::RenderError { message: "경로: 표가 아닙니다".to_string() }),
             };
             let cell = table.cells.get_mut(cell_idx)
-                .ok_or_else(|| HwpError::RenderError("셀 범위 초과".to_string()))?;
+                .ok_or_else(|| HwpError::RenderError { message: "셀 범위 초과".to_string() })?;
             if i == path.len() - 1 {
                 if cell_para_idx >= cell.paragraphs.len() {
-                    return Err(HwpError::RenderError("셀문단 범위 초과".to_string()));
+                    return Err(HwpError::RenderError { message: "셀문단 범위 초과".to_string() });
                 }
                 let removed = cell.paragraphs.remove(cell_para_idx);
                 let prev = &mut cell.paragraphs[cell_para_idx - 1];
@@ -2168,7 +2168,7 @@ impl DocumentCore {
                 break;
             }
             para = cell.paragraphs.get_mut(_cpi)
-                .ok_or_else(|| HwpError::RenderError("셀문단 범위 초과".to_string()))?;
+                .ok_or_else(|| HwpError::RenderError { message: "셀문단 범위 초과".to_string() })?;
         }
 
         let outer_ctrl = path[0].0;

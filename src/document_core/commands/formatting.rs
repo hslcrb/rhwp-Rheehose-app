@@ -22,9 +22,9 @@ impl DocumentCore {
         char_offset: usize,
     ) -> Result<String, HwpError> {
         let section = self.document.sections.get(sec_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("구역 {} 범위 초과", sec_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("구역 {} 범위 초과", sec_idx) })?;
         let para = section.paragraphs.get(para_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("문단 {} 범위 초과", para_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("문단 {} 범위 초과", para_idx) })?;
         Ok(self.build_char_properties_json(para, char_offset))
     }
 
@@ -39,7 +39,7 @@ impl DocumentCore {
         char_offset: usize,
     ) -> Result<String, HwpError> {
         let para = self.get_cell_paragraph_ref(sec_idx, parent_para_idx, control_idx, cell_idx, cell_para_idx)
-            .ok_or_else(|| HwpError::RenderError("셀 문단을 찾을 수 없음".to_string()))?;
+            .ok_or_else(|| HwpError::RenderError { message: "셀 문단을 찾을 수 없음".to_string() })?;
         Ok(self.build_char_properties_json(para, char_offset))
     }
 
@@ -52,9 +52,9 @@ impl DocumentCore {
         use crate::model::control::Control;
         use crate::model::style::HeadType;
         let section = self.document.sections.get(sec_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("구역 {} 범위 초과", sec_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("구역 {} 범위 초과", sec_idx) })?;
         let para = section.paragraphs.get(para_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("문단 {} 범위 초과", para_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("문단 {} 범위 초과", para_idx) })?;
         let mut json = self.build_para_properties_json(para.para_shape_id, sec_idx);
 
         // 번호 시작 방식 판별: numbering_id 패턴 기반
@@ -109,7 +109,7 @@ impl DocumentCore {
         cell_para_idx: usize,
     ) -> Result<String, HwpError> {
         let para = self.get_cell_paragraph_ref(sec_idx, parent_para_idx, control_idx, cell_idx, cell_para_idx)
-            .ok_or_else(|| HwpError::RenderError("셀 문단을 찾을 수 없음".to_string()))?;
+            .ok_or_else(|| HwpError::RenderError { message: "셀 문단을 찾을 수 없음".to_string() })?;
         Ok(self.build_para_properties_json(para.para_shape_id, sec_idx))
     }
 
@@ -658,10 +658,10 @@ impl DocumentCore {
         props_json: &str,
     ) -> Result<String, HwpError> {
         if sec_idx >= self.document.sections.len() {
-            return Err(HwpError::RenderError(format!("구역 {} 범위 초과", sec_idx)));
+            return Err(HwpError::RenderError { message: format!("구역 {} 범위 초과", sec_idx) });
         }
         if para_idx >= self.document.sections[sec_idx].paragraphs.len() {
-            return Err(HwpError::RenderError(format!("문단 {} 범위 초과", para_idx)));
+            return Err(HwpError::RenderError { message: format!("문단 {} 범위 초과", para_idx) });
         }
 
         let mut mods = parse_char_shape_mods(props_json);
@@ -722,7 +722,7 @@ impl DocumentCore {
         // 셀 내 문단의 기존 char_shape_id를 기반으로 새 ID 생성
         {
             let para = self.get_cell_paragraph_ref(sec_idx, parent_para_idx, control_idx, cell_idx, cell_para_idx)
-                .ok_or_else(|| HwpError::RenderError("셀 문단을 찾을 수 없음".to_string()))?;
+                .ok_or_else(|| HwpError::RenderError { message: "셀 문단을 찾을 수 없음".to_string() })?;
             let base_id = para.char_shape_id_at(start_offset).unwrap_or(0);
             let new_id = self.document.find_or_create_char_shape(base_id, &mods);
 
@@ -773,10 +773,10 @@ impl DocumentCore {
         props_json: &str,
     ) -> Result<String, HwpError> {
         if sec_idx >= self.document.sections.len() {
-            return Err(HwpError::RenderError(format!("구역 {} 범위 초과", sec_idx)));
+            return Err(HwpError::RenderError { message: format!("구역 {} 범위 초과", sec_idx) });
         }
         if para_idx >= self.document.sections[sec_idx].paragraphs.len() {
-            return Err(HwpError::RenderError(format!("문단 {} 범위 초과", para_idx)));
+            return Err(HwpError::RenderError { message: format!("문단 {} 범위 초과", para_idx) });
         }
 
         let mut mods = parse_para_shape_mods(props_json);
@@ -849,7 +849,7 @@ impl DocumentCore {
         // 탭 설정 변경 처리: TabDef 생성 → tab_def_id 세팅
         if json_has_tab_keys(props_json) {
             let para = self.get_cell_paragraph_ref(sec_idx, parent_para_idx, control_idx, cell_idx, cell_para_idx)
-                .ok_or_else(|| HwpError::RenderError("셀 문단을 찾을 수 없음".to_string()))?;
+                .ok_or_else(|| HwpError::RenderError { message: "셀 문단을 찾을 수 없음".to_string() })?;
             let base_tab_def_id = self.document.doc_info.para_shapes
                 .get(para.para_shape_id as usize)
                 .map(|ps| ps.tab_def_id)
@@ -871,7 +871,7 @@ impl DocumentCore {
         let new_id;
         {
             let para = self.get_cell_paragraph_ref(sec_idx, parent_para_idx, control_idx, cell_idx, cell_para_idx)
-                .ok_or_else(|| HwpError::RenderError("셀 문단을 찾을 수 없음".to_string()))?;
+                .ok_or_else(|| HwpError::RenderError { message: "셀 문단을 찾을 수 없음".to_string() })?;
             let base_id = para.para_shape_id;
             new_id = self.document.find_or_create_para_shape(base_id, &mods);
 
@@ -1048,20 +1048,20 @@ impl DocumentCore {
         style_id: usize,
     ) -> Result<String, HwpError> {
         let style = self.document.doc_info.styles.get(style_id)
-            .ok_or_else(|| HwpError::RenderError(format!("스타일 {} 범위 초과", style_id)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("스타일 {} 범위 초과", style_id) })?;
         let new_char_shape_id = style.char_shape_id as u32;
 
         // 현재 문단의 para_shape_id를 먼저 읽어서 번호 문맥 보존
         let current_psid = self.document.sections.get(sec_idx)
             .and_then(|s| s.paragraphs.get(para_idx))
             .map(|p| p.para_shape_id)
-            .ok_or_else(|| HwpError::RenderError(format!("문단 {}/{} 범위 초과", sec_idx, para_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("문단 {}/{} 범위 초과", sec_idx, para_idx) })?;
 
         let new_para_shape_id = self.resolve_style_para_shape_id(style_id, current_psid);
 
         let para = self.document.sections.get_mut(sec_idx)
             .and_then(|s| s.paragraphs.get_mut(para_idx))
-            .ok_or_else(|| HwpError::RenderError(format!("문단 {}/{} 범위 초과", sec_idx, para_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("문단 {}/{} 범위 초과", sec_idx, para_idx) })?;
 
         para.style_id = style_id as u8;
         para.para_shape_id = new_para_shape_id;
@@ -1090,13 +1090,13 @@ impl DocumentCore {
         style_id: usize,
     ) -> Result<String, HwpError> {
         let style = self.document.doc_info.styles.get(style_id)
-            .ok_or_else(|| HwpError::RenderError(format!("스타일 {} 범위 초과", style_id)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("스타일 {} 범위 초과", style_id) })?;
         let new_char_shape_id = style.char_shape_id as u32;
 
         // 현재 셀 문단의 para_shape_id를 먼저 읽어서 번호 문맥 보존
         let current_psid = self.get_cell_paragraph_ref(sec_idx, parent_para_idx, control_idx, cell_idx, cell_para_idx)
             .map(|p| p.para_shape_id)
-            .ok_or_else(|| HwpError::RenderError("셀 문단을 찾을 수 없음".to_string()))?;
+            .ok_or_else(|| HwpError::RenderError { message: "셀 문단을 찾을 수 없음".to_string() })?;
 
         let new_para_shape_id = self.resolve_style_para_shape_id(style_id, current_psid);
 
@@ -1148,10 +1148,10 @@ impl DocumentCore {
         use crate::model::paragraph::NumberingRestart;
 
         if section_idx >= self.document.sections.len() {
-            return Err(crate::error::HwpError::RenderError("구역 범위 초과".to_string()));
+            return Err(crate::error::HwpError::RenderError { message: "구역 범위 초과".to_string() });
         }
         if para_idx >= self.document.sections[section_idx].paragraphs.len() {
-            return Err(crate::error::HwpError::RenderError("문단 범위 초과".to_string()));
+            return Err(crate::error::HwpError::RenderError { message: "문단 범위 초과".to_string() });
         }
 
         let restart = match mode {
@@ -1186,10 +1186,10 @@ impl DocumentCore {
         use crate::model::control::{Control, PageHide};
 
         if section_idx >= self.document.sections.len() {
-            return Err(crate::error::HwpError::RenderError("구역 범위 초과".to_string()));
+            return Err(crate::error::HwpError::RenderError { message: "구역 범위 초과".to_string() });
         }
         if para_idx >= self.document.sections[section_idx].paragraphs.len() {
-            return Err(crate::error::HwpError::RenderError("문단 범위 초과".to_string()));
+            return Err(crate::error::HwpError::RenderError { message: "문단 범위 초과".to_string() });
         }
 
         let all_false = !hide_header && !hide_footer && !hide_master_page
@@ -1239,9 +1239,9 @@ impl DocumentCore {
         use crate::model::control::Control;
 
         let section = self.document.sections.get(section_idx)
-            .ok_or_else(|| crate::error::HwpError::RenderError("구역 범위 초과".to_string()))?;
+            .ok_or_else(|| crate::error::HwpError::RenderError { message: "구역 범위 초과".to_string() })?;
         let para = section.paragraphs.get(para_idx)
-            .ok_or_else(|| crate::error::HwpError::RenderError("문단 범위 초과".to_string()))?;
+            .ok_or_else(|| crate::error::HwpError::RenderError { message: "문단 범위 초과".to_string() })?;
 
         for ctrl in &para.controls {
             if let Control::PageHide(ph) = ctrl {

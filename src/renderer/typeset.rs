@@ -1514,7 +1514,7 @@ impl TypesetEngine {
                     PageItem::Table { para_index, .. } => *para_index,
                     PageItem::PartialTable { para_index, .. } => *para_index,
                     PageItem::Shape { para_index, .. } => *para_index,
-                });
+                } );
 
             if let Some(fp) = first_para {
                 for &(nn_pi, nn_num) in new_page_numbers {
@@ -1533,7 +1533,7 @@ impl TypesetEngine {
                     PageItem::Table { para_index, .. } => *para_index,
                     PageItem::PartialTable { para_index, .. } => *para_index,
                     PageItem::Shape { para_index, .. } => *para_index,
-                })
+                } )
                 .max();
 
             if let Some(last_pi) = page_last_para {

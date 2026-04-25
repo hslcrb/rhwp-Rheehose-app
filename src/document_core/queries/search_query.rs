@@ -65,7 +65,7 @@ fn search_all(doc: &DocumentCore, query: &str, case_sensitive: bool) -> Vec<Sear
                     char_offset: offset,
                     length: qlen,
                     cell_context: None,
-                });
+                };
             }
 
             // 표 셀
@@ -81,7 +81,7 @@ fn search_all(doc: &DocumentCore, query: &str, case_sensitive: bool) -> Vec<Sear
                                         char_offset: offset,
                                         length: qlen,
                                         cell_context: Some((para_idx, ctrl_idx, cell_idx, cell_para_idx)),
-                                    });
+                                    };
                                 }
                             }
                         }
@@ -96,7 +96,7 @@ fn search_all(doc: &DocumentCore, query: &str, case_sensitive: bool) -> Vec<Sear
                                         char_offset: offset,
                                         length: qlen,
                                         cell_context: Some((para_idx, ctrl_idx, 0, tb_para_idx)),
-                                    });
+                                    };
                                 }
                             }
                         }
@@ -149,7 +149,7 @@ impl DocumentCore {
                 h.sec > from_sec
                 || (h.sec == from_sec && h.para > from_para)
                 || (h.sec == from_sec && h.para == from_para && h.char_offset > from_char)
-            });
+            };
             match after {
                 Some(h) => Ok(format_search_hit(h, false)),
                 None => Ok(format_search_hit(body_hits[0], true)),
@@ -159,7 +159,7 @@ impl DocumentCore {
                 h.sec < from_sec
                 || (h.sec == from_sec && h.para < from_para)
                 || (h.sec == from_sec && h.para == from_para && h.char_offset < from_char)
-            });
+            };
             match before {
                 Some(h) => Ok(format_search_hit(h, false)),
                 None => Ok(format_search_hit(body_hits[body_hits.len() - 1], true)),
@@ -213,22 +213,22 @@ impl DocumentCore {
             if let Some((parent_para, ctrl_idx, cell_idx, cell_para_idx)) = hit.cell_context {
                 // 표 셀 내부 치환
                 let section = self.document.sections.get_mut(hit.sec)
-                    .ok_or_else(|| HwpError::RenderError("구역 범위 초과".into()))?;
+                    .ok_or_else(|| HwpError::RenderError { message: "구역 범위 초과".into() })?;
                 let para = section.paragraphs.get_mut(parent_para)
-                    .ok_or_else(|| HwpError::RenderError("문단 범위 초과".into()))?;
+                    .ok_or_else(|| HwpError::RenderError { message: "문단 범위 초과".into() })?;
 
                 let cell_para = match para.controls.get_mut(ctrl_idx) {
                     Some(Control::Table(table)) => {
                         let cell = table.cells.get_mut(cell_idx)
-                            .ok_or_else(|| HwpError::RenderError("셀 범위 초과".into()))?;
+                            .ok_or_else(|| HwpError::RenderError { message: "셀 범위 초과".into() })?;
                         cell.paragraphs.get_mut(cell_para_idx)
-                            .ok_or_else(|| HwpError::RenderError("셀 문단 범위 초과".into()))?
+                            .ok_or_else(|| HwpError::RenderError { message: "셀 문단 범위 초과".into() })?
                     }
                     Some(Control::Shape(shape)) => {
                         let tb = crate::document_core::helpers::get_textbox_from_shape_mut(shape)
-                            .ok_or_else(|| HwpError::RenderError("글상자 없음".into()))?;
+                            .ok_or_else(|| HwpError::RenderError { message: "글상자 없음".into() })?;
                         tb.paragraphs.get_mut(cell_para_idx)
-                            .ok_or_else(|| HwpError::RenderError("글상자 문단 범위 초과".into()))?
+                            .ok_or_else(|| HwpError::RenderError { message: "글상자 문단 범위 초과".into() })?
                     }
                     _ => continue,
                 };
@@ -238,9 +238,9 @@ impl DocumentCore {
                 // 본문 문단 치환 — delete_text_native + insert_text_native는 recompose를 호출하므로
                 // 성능을 위해 직접 문단 수준 조작 후 마지막에 일괄 recompose
                 let section = self.document.sections.get_mut(hit.sec)
-                    .ok_or_else(|| HwpError::RenderError("구역 범위 초과".into()))?;
+                    .ok_or_else(|| HwpError::RenderError { message: "구역 범위 초과".into() })?;
                 let para = section.paragraphs.get_mut(hit.para)
-                    .ok_or_else(|| HwpError::RenderError("문단 범위 초과".into()))?;
+                    .ok_or_else(|| HwpError::RenderError { message: "문단 범위 초과".into() })?;
                 para.delete_text_at(hit.char_offset, hit.length);
                 para.insert_text_at(hit.char_offset, new_text);
             }
@@ -292,7 +292,7 @@ impl DocumentCore {
                 page_offset += 1;
             }
         }
-        Err(HwpError::RenderError(format!("쪽 번호 {} 범위 초과", global_page)))
+        Err(HwpError::RenderError { message: format!("쪽 번호 {} 범위 초과", global_page) }
     }
 
     /// 위치에 해당하는 글로벌 쪽 번호를 반환

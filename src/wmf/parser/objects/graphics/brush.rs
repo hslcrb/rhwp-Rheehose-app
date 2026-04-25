@@ -82,7 +82,7 @@ impl Brush {
             v => {
                 return Err(crate::wmf::parser::ParseError::NotSupported {
                     cause: format!("BrushStyle {v:?}"),
-                });
+                };
             }
         };
 

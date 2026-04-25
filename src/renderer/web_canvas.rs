@@ -332,7 +332,7 @@ impl WebCanvasRenderer {
                                     super::PathCommand::LineTo(px, py) => (*px, *py),
                                     super::PathCommand::CurveTo(cx, cy, _, _, _, _) => (*cx, *cy),
                                     _ => continue,
-                                };
+                                });
                                 if (x1 - px).abs() > 0.5 || (y1 - py).abs() > 0.5 {
                                     found = (x1 - px, y1 - py);
                                     break;
@@ -370,7 +370,7 @@ impl WebCanvasRenderer {
                                 }
                             }
                             found
-                        };
+                        });
                         let d = (dx*dx + dy*dy).sqrt().max(0.001);
                         let (aw, ah) = calc_arrow_dims(width, len, ls.end_arrow_size);
                         draw_arrow_head(&self.ctx, x2, y2, dx/d, dy/d, aw, ah, &ls.end_arrow, &color, width);
@@ -440,7 +440,7 @@ impl WebCanvasRenderer {
                 RenderNodeType::Footer => Some("[꼬리말]"),
                 RenderNodeType::FootnoteArea => Some("[각주]"),
                 _ => None,
-            };
+            });
             if let Some(label) = label {
                 let fs = 10.0;
                 self.ctx.set_fill_style_str("#CC3333");
@@ -581,7 +581,7 @@ impl WebCanvasRenderer {
                 arr.push(&JsValue::from_f64(3.0));
                 arr
             }
-        };
+        });
         let _ = self.ctx.set_line_dash(&pattern);
     }
 
@@ -617,11 +617,11 @@ impl WebCanvasRenderer {
         let window = match web_sys::window() {
             Some(w) => w,
             None => return false,
-        };
+        });
         let document = match window.document() {
             Some(d) => d,
             None => return false,
-        };
+        });
 
         // 오프스크린 캔버스 생성 (6×6 타일)
         let tile_canvas = match document.create_element("canvas") {
@@ -641,7 +641,7 @@ impl WebCanvasRenderer {
                 Err(_) => return false,
             },
             _ => return false,
-        };
+        });
 
         let bg = color_to_css(info.background_color);
         let fg = color_to_css(info.pattern_color);
@@ -744,7 +744,7 @@ impl WebCanvasRenderer {
                 let (x0, y0, x1, y1) = Self::angle_to_canvas_coords(grad.angle, x, y, w, h);
                 self.ctx.create_linear_gradient(x0, y0, x1, y1)
             }
-        };
+        });
 
         // 색상 스톱 추가 (positions는 이미 0.0~1.0으로 정규화됨)
         for (i, &color) in grad.colors.iter().enumerate() {
@@ -1335,7 +1335,7 @@ impl Renderer for WebCanvasRenderer {
                 ctx.move_to(lx1, y);
                 ctx.line_to(lx2, y);
                 ctx.stroke();
-            };
+            });
 
             self.ctx.set_stroke_style_str(&stroke_color);
             match leader.fill_type {
@@ -1502,7 +1502,7 @@ impl Renderer for WebCanvasRenderer {
         let cached = IMAGE_CACHE.with(|cache| {
             let c = cache.borrow();
             c.get(&key).cloned()
-        });
+        };
 
         if let Some(img) = cached {
             if img.complete() && img.natural_width() > 0 {
@@ -1524,7 +1524,7 @@ impl Renderer for WebCanvasRenderer {
             }
         } else {
             (std::borrow::Cow::Borrowed(data), mime_type)
-        };
+        });
 
         // Base64 인코딩 및 data URL 생성
         let base64_data = base64::engine::general_purpose::STANDARD.encode(&*render_data);
@@ -1541,7 +1541,7 @@ impl Renderer for WebCanvasRenderer {
                     c.clear();
                 }
                 c.insert(key, img.clone());
-            });
+            };
 
             // 이미지가 즉시 사용 가능하면 그리기
             if img.complete() && img.natural_width() > 0 {
@@ -1577,7 +1577,7 @@ impl WebCanvasRenderer {
         let cached = IMAGE_CACHE.with(|cache| {
             let c = cache.borrow();
             c.get(&key).cloned()
-        });
+        };
 
         if let Some(img) = cached {
             if img.complete() && img.natural_width() > 0 {
@@ -1634,7 +1634,7 @@ impl WebCanvasRenderer {
                     if stroke { let _ = ctx.stroke_text(cs, char_x, char_y); }
                 }
             }
-        };
+        });
 
         // 양각/음각 (상호 배타적, 다른 효과보다 우선)
         if style.emboss || style.engrave {
@@ -1730,7 +1730,7 @@ impl WebCanvasRenderer {
                 } else {
                     ch.to_string()
                 }
-            };
+            });
 
             let cx = bbox_x + i as f64 * char_advance + box_size / 2.0;
             let cy = bbox_y + bbox_h - box_size / 2.0;
@@ -2001,7 +2001,7 @@ impl WebCanvasRenderer {
                             return;
                         }
                     }
-                };
+                });
 
                 let (ix, iy) = match mode {
                     ImageFillMode::LeftTop => (bbox.x, bbox.y),
@@ -2016,7 +2016,7 @@ impl WebCanvasRenderer {
                     ImageFillMode::TileAll | ImageFillMode::TileHorzTop | ImageFillMode::TileHorzBottom
                     | ImageFillMode::TileVertLeft | ImageFillMode::TileVertRight => (bbox.x, bbox.y),
                     _ => (bbox.x, bbox.y),
-                };
+                });
 
                 // Canvas에서 클리핑 적용
                 self.ctx.save();

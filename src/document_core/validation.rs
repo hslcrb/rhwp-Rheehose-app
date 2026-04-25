@@ -127,19 +127,19 @@ mod tests {
             paragraph_idx: 1,
             cell_path: None,
             kind: WarningKind::LinesegArrayEmpty,
-        });
+        };
         r.push(ValidationWarning {
             section_idx: 0,
             paragraph_idx: 2,
             cell_path: None,
             kind: WarningKind::LinesegUncomputed,
-        });
+        };
         r.push(ValidationWarning {
             section_idx: 0,
             paragraph_idx: 3,
             cell_path: None,
             kind: WarningKind::LinesegUncomputed,
-        });
+        };
         let summary = r.summary();
         assert_eq!(summary.len(), 2);
         assert_eq!(summary.get("lineseg 배열이 비어있음").copied(), Some(1));

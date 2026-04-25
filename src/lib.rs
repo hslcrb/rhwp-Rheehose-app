@@ -11,7 +11,10 @@ pub mod serializer;
 pub mod error;
 pub mod document_core;
 pub mod wasm_api;
+pub mod uniffi_api;
 pub mod wmf;
+
+uniffi::setup_scaffolding!("rhwp");
 
 pub use parser::{DocumentParser, parse_document};
 pub use serializer::{DocumentSerializer, serialize_document};

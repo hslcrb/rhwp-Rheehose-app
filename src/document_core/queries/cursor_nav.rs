@@ -15,9 +15,9 @@ impl DocumentCore {
         char_offset: usize,
     ) -> Result<String, HwpError> {
         let para = self.document.sections.get(section_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("구역 인덱스 {} 범위 초과", section_idx)))?
+            .ok_or_else(|| HwpError::RenderError { message: format!("구역 인덱스 {} 범위 초과", section_idx) }?
             .paragraphs.get(para_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("문단 인덱스 {} 범위 초과", para_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("문단 인덱스 {} 범위 초과", para_idx) })?;
 
         Self::compute_line_info(para, char_offset)
     }
@@ -67,7 +67,7 @@ impl DocumentCore {
                 line_count: 1,
                 char_start: 0,
                 char_end: char_count,
-            });
+            };
         }
 
         let line_char_starts = Self::build_line_char_starts(para);
@@ -194,7 +194,7 @@ impl DocumentCore {
         // ═══ PHASE 2: 현재 줄 정보 + 목표 줄 결정 ═══
         let current_para = self.resolve_paragraph(sec, para, cell_ctx)?;
         let line_info = Self::compute_line_info_struct(current_para, char_offset)
-            .unwrap_or(LineInfoResult { line_index: 0, line_count: 1, char_start: 0, char_end: navigable_text_len(current_para) });
+            .unwrap_or(LineInfoResult { line_index: 0, line_count: 1, char_start: 0, char_end: navigable_text_len(current_para) };
         let target_line = line_info.line_index as i32 + delta;
 
         // ═══ PHASE 3: 목표 위치 결정 ═══
@@ -285,9 +285,9 @@ impl DocumentCore {
                 )))
         } else {
             self.document.sections.get(sec)
-                .ok_or_else(|| HwpError::RenderError(format!("구역 인덱스 {} 범위 초과", sec)))?
+                .ok_or_else(|| HwpError::RenderError { message: format!("구역 인덱스 {} 범위 초과", sec) }?
                 .paragraphs.get(para)
-                .ok_or_else(|| HwpError::RenderError(format!("문단 인덱스 {} 범위 초과", para)))
+                .ok_or_else(|| HwpError::RenderError { message: format!("문단 인덱스 {} 범위 초과", para) }
         }
     }
 
@@ -343,7 +343,7 @@ impl DocumentCore {
         // 경량 JSON 파서: [{"controlIndex":N,"cellIndex":N,"cellParaIndex":N}, ...]
         let trimmed = path_json.trim();
         if !trimmed.starts_with('[') || !trimmed.ends_with(']') {
-            return Err(HwpError::RenderError("cellPath JSON은 배열이어야 합니다".to_string()));
+            return Err(HwpError::RenderError { message: "cellPath JSON은 배열이어야 합니다".to_string() });
         }
         let inner = &trimmed[1..trimmed.len()-1];
         if inner.trim().is_empty() {
@@ -383,13 +383,13 @@ impl DocumentCore {
         path: &[(usize, usize, usize)],
     ) -> Result<&'a crate::model::table::Table, HwpError> {
         if path.is_empty() {
-            return Err(HwpError::RenderError("경로가 비어있습니다".to_string()));
+            return Err(HwpError::RenderError { message: "경로가 비어있습니다".to_string() });
         }
 
         let mut para = self.document.sections.get(sec)
-            .ok_or_else(|| HwpError::RenderError(format!("구역 {} 범위 초과", sec)))?
+            .ok_or_else(|| HwpError::RenderError { message: format!("구역 {} 범위 초과", sec) }?
             .paragraphs.get(parent_para)
-            .ok_or_else(|| HwpError::RenderError(format!("문단 {} 범위 초과", parent_para)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("문단 {} 범위 초과", parent_para) })?;
 
         for (i, &(ctrl_idx, cell_idx, cell_para_idx)) in path.iter().enumerate() {
             let table = match para.controls.get(ctrl_idx) {
@@ -425,7 +425,7 @@ impl DocumentCore {
         path: &[(usize, usize, usize)],
     ) -> Result<&'a crate::model::table::Cell, HwpError> {
         if path.is_empty() {
-            return Err(HwpError::RenderError("경로가 비어있습니다".to_string()));
+            return Err(HwpError::RenderError { message: "경로가 비어있습니다".to_string() });
         }
 
         let last = path.last().unwrap();
@@ -444,13 +444,13 @@ impl DocumentCore {
         path: &[(usize, usize, usize)],
     ) -> Result<&'a Paragraph, HwpError> {
         if path.is_empty() {
-            return Err(HwpError::RenderError("경로가 비어있습니다".to_string()));
+            return Err(HwpError::RenderError { message: "경로가 비어있습니다".to_string() });
         }
 
         let mut para = self.document.sections.get(sec)
-            .ok_or_else(|| HwpError::RenderError(format!("구역 {} 범위 초과", sec)))?
+            .ok_or_else(|| HwpError::RenderError { message: format!("구역 {} 범위 초과", sec) }?
             .paragraphs.get(parent_para)
-            .ok_or_else(|| HwpError::RenderError(format!("문단 {} 범위 초과", parent_para)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("문단 {} 범위 초과", parent_para) })?;
 
         for (i, &(ctrl_idx, cell_idx, cell_para_idx)) in path.iter().enumerate() {
             let next_para = match para.controls.get(ctrl_idx) {
@@ -498,13 +498,13 @@ impl DocumentCore {
         path: &[(usize, usize, usize)],
     ) -> Result<usize, HwpError> {
         if path.is_empty() {
-            return Err(HwpError::RenderError("경로가 비어있습니다".to_string()));
+            return Err(HwpError::RenderError { message: "경로가 비어있습니다".to_string() });
         }
 
         let mut para = self.document.sections.get(sec)
-            .ok_or_else(|| HwpError::RenderError(format!("구역 {} 범위 초과", sec)))?
+            .ok_or_else(|| HwpError::RenderError { message: format!("구역 {} 범위 초과", sec) }?
             .paragraphs.get(parent_para)
-            .ok_or_else(|| HwpError::RenderError(format!("문단 {} 범위 초과", parent_para)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("문단 {} 범위 초과", parent_para) })?;
 
         // 중간 경로 탐색 (마지막 엔트리 제외)
         for (i, &(ctrl_idx, cell_idx, cell_para_idx)) in path[..path.len()-1].iter().enumerate() {
@@ -639,7 +639,7 @@ impl DocumentCore {
                             char_count: cc,
                             char_positions: positions,
                             bbox_x: node.bbox.x,
-                        });
+                        };
                     }
                 }
             }
@@ -698,7 +698,7 @@ impl DocumentCore {
         preferred_x: f64,
     ) -> Result<(usize, usize, usize, Option<(usize, usize, usize, usize)>), HwpError> {
         let section = self.document.sections.get(sec)
-            .ok_or_else(|| HwpError::RenderError(format!("구역 인덱스 {} 범위 초과", sec)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("구역 인덱스 {} 범위 초과", sec) })?;
         let target_para_i = para as i32 + delta;
 
         // 구역 경계 처리
@@ -738,9 +738,9 @@ impl DocumentCore {
         preferred_x: f64,
     ) -> Result<(usize, usize, usize, Option<(usize, usize, usize, usize)>), HwpError> {
         let para_ref = self.document.sections.get(sec)
-            .ok_or_else(|| HwpError::RenderError(format!("구역 인덱스 {} 범위 초과", sec)))?
+            .ok_or_else(|| HwpError::RenderError { message: format!("구역 인덱스 {} 범위 초과", sec) }?
             .paragraphs.get(target_para)
-            .ok_or_else(|| HwpError::RenderError(format!("문단 인덱스 {} 범위 초과", target_para)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("문단 인덱스 {} 범위 초과", target_para) })?;
 
         // 표 컨트롤 확인
         if let Some(ctrl_idx) = has_table_control(para_ref) {
@@ -784,7 +784,7 @@ impl DocumentCore {
         };
         let range = Self::get_line_char_range(para_ref, target_line);
         let offset = self.find_char_at_x_on_line(sec, target_para, None, range, preferred_x)
-            .unwrap_or(if delta > 0 { 0 } else { navigable_text_len(para_ref) });
+            .unwrap_or(if delta > 0 { 0 } else { navigable_text_len(para_ref) };
         Ok((sec, target_para, offset, None))
     }
 
@@ -799,9 +799,9 @@ impl DocumentCore {
         (ppi, ci, cei, cpi): (usize, usize, usize, usize),
     ) -> Result<(usize, usize, usize, Option<(usize, usize, usize, usize)>), HwpError> {
         let table_para = self.document.sections.get(sec)
-            .ok_or_else(|| HwpError::RenderError("구역 범위 초과".to_string()))?
+            .ok_or_else(|| HwpError::RenderError { message: "구역 범위 초과".to_string() }?
             .paragraphs.get(ppi)
-            .ok_or_else(|| HwpError::RenderError("문단 범위 초과".to_string()))?;
+            .ok_or_else(|| HwpError::RenderError { message: "문단 범위 초과".to_string() })?;
 
         // 글상자인 경우: 문단 간 이동만, 셀 이동 없이 경계에서 본문 탈출
         if let Some(Control::Shape(shape)) = table_para.controls.get(ci) {
@@ -838,11 +838,11 @@ impl DocumentCore {
 
         let table = match table_para.controls.get(ci) {
             Some(Control::Table(t)) => t,
-            _ => return Err(HwpError::RenderError("표 컨트롤이 아닙니다".to_string())),
+            _ => return Err(HwpError::RenderError { message: "표 컨트롤이 아닙니다".to_string() },
         };
 
         let cell = table.cells.get(cei)
-            .ok_or_else(|| HwpError::RenderError("셀 범위 초과".to_string()))?;
+            .ok_or_else(|| HwpError::RenderError { message: "셀 범위 초과".to_string() })?;
 
         // 1. 셀 내 다른 문단으로 이동 시도
         if delta > 0 && cpi + 1 < cell.paragraphs.len() {
@@ -1065,7 +1065,7 @@ impl DocumentCore {
                                  else { 0.0 };
                         return Some(CursorHit {
                             page, x: node.bbox.x + xr, y: node.bbox.y, h: node.bbox.height,
-                        });
+                        };
                     }
                 }
             }
@@ -1087,7 +1087,7 @@ impl DocumentCore {
                         && ctx.path[0].control_index == ci
                         && ctx.path[0].cell_index == cei
                         && ctx.path[0].cell_para_index == cpi
-                });
+                };
                 if matches_cell {
                     let cs = tr.char_start.unwrap_or(0);
                     let cc = tr.text.chars().count();
@@ -1099,7 +1099,7 @@ impl DocumentCore {
                                  else { 0.0 };
                         return Some(CursorHit {
                             page, x: node.bbox.x + xr, y: node.bbox.y, h: node.bbox.height,
-                        });
+                        };
                     }
                 }
             }
@@ -1192,9 +1192,9 @@ impl DocumentCore {
                     )))?
             } else {
                 self.document.sections.get(section_idx)
-                    .ok_or_else(|| HwpError::RenderError(format!("구역 인덱스 {} 범위 초과", section_idx)))?
+                    .ok_or_else(|| HwpError::RenderError { message: format!("구역 인덱스 {} 범위 초과", section_idx) }?
                     .paragraphs.get(para_idx)
-                    .ok_or_else(|| HwpError::RenderError(format!("문단 인덱스 {} 범위 초과", para_idx)))?
+                    .ok_or_else(|| HwpError::RenderError { message: format!("문단 인덱스 {} 범위 초과", para_idx) }?
             };
 
             let char_count = navigable_text_len(para);

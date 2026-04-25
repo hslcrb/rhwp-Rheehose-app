@@ -1075,7 +1075,7 @@ impl META_ESCAPE {
             v => {
                 return Err(crate::wmf::parser::ParseError::NotSupported {
                     cause: format!("Metafile Escapes `{v:?}` is not supported"),
-                });
+                };
             }
         };
 

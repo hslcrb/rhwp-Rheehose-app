@@ -480,8 +480,8 @@ fn test_lineseg_field_semantics() {
 
     eprintln!("\n=== 결과 요약 ===");
     eprintln!("총 줄 쌍: {}", total_pairs);
-    eprintln!("vpos_diff == line_spacing: {} ({}%)", match_ls_count, if total_pairs > 0 { match_ls_count * 100 / total_pairs } else { 0 });
-    eprintln!("vpos_diff == line_height + line_spacing: {} ({}%)", match_lh_ls_count, if total_pairs > 0 { match_lh_ls_count * 100 / total_pairs } else { 0 });
+    eprintln!("vpos_diff == line_spacing: {} ({}%)", match_ls_count, if total_pairs > 0 { match_ls_count * 100 / total_pairs } else { 0 };
+    eprintln!("vpos_diff == line_height + line_spacing: {} ({}%)", match_lh_ls_count, if total_pairs > 0 { match_lh_ls_count * 100 / total_pairs } else { 0 };
 
     // 2. 문단 간 vpos 관계 분석
     eprintln!("\n=== 문단 간 관계 분석 ===");

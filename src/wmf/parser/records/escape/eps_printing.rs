@@ -20,7 +20,7 @@ impl crate::wmf::parser::META_ESCAPE {
                 cause: format!(
                     "The byte_count `{byte_count:#06X}` field must be `0x0002`",
                 ),
-            });
+            };
         }
 
         crate::wmf::parser::records::consume_remaining_bytes(buf, record_size)?;

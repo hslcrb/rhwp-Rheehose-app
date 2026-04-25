@@ -122,7 +122,7 @@ fn bytes_into_utf8(
             return Err(crate::wmf::parser::ParseError::UnexpectedPattern {
                 cause: "Failed to decode string with specified charset"
                     .to_string(),
-            });
+            };
         }
 
         Ok(cow.replace('\0', ""))

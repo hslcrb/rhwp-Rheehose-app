@@ -88,7 +88,7 @@ mod tests {
                     cc.items.iter().any(|item| matches!(item, PageItem::PartialTable { .. }))
                 })
             })
-        });
+        };
         assert!(has_partial_table,
             "hwpspec-w.hwp에는 페이지 분할된 표(PartialTable)가 있어야 함");
     }

@@ -41,7 +41,7 @@ macro_rules! impl_parser {
                                 ),
                                 value
                             ),
-                        });
+                        };
                     };
 
                     Ok((v, consumed_bytes))

@@ -99,7 +99,7 @@ impl Bitmap16 {
         if planes != 0x01 {
             return Err(crate::wmf::parser::ParseError::UnexpectedPattern {
                 cause: "The planes field must be 0x01".to_owned(),
-            });
+            };
         }
 
         let (bits_pixel, _) = {

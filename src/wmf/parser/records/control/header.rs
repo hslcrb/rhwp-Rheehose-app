@@ -79,7 +79,7 @@ impl META_HEADER {
             return Err(crate::wmf::parser::ParseError::UnexpectedPattern {
                 cause: "The number_of_members field should be `0x0000`"
                     .to_owned(),
-            });
+            };
         }
 
         Ok((

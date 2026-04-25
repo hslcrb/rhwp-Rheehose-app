@@ -327,7 +327,7 @@ fn test_serialize_doc_info_roundtrip() {
         alt_type: 0,
         alt_name: None,
         default_name: None,
-    });
+    };
     doc_info.char_shapes.push(CharShape {
         raw_data: None,
         font_ids: [0; 7],
@@ -359,7 +359,7 @@ fn test_serialize_doc_info_roundtrip() {
         underline_shape: 0,
         strike_shape: 0,
         kerning: false,
-    });
+    };
     doc_info.para_shapes.push(ParaShape {
         raw_data: None,
         attr1: 0,
@@ -380,7 +380,7 @@ fn test_serialize_doc_info_roundtrip() {
         line_spacing_v2: 0,
         head_type: crate::model::style::HeadType::None,
         para_level: 0,
-    });
+    };
     doc_info.styles.push(Style {
         raw_data: None,
         local_name: "바탕글".to_string(),
@@ -389,7 +389,7 @@ fn test_serialize_doc_info_roundtrip() {
         next_style_id: 0,
         para_shape_id: 0,
         char_shape_id: 0,
-    });
+    };
 
     // 직렬화 → 역직렬화
     let stream = serialize_doc_info(&doc_info, &doc_props);

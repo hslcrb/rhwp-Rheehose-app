@@ -409,7 +409,7 @@ impl Font {
         font_family.push(self.facename.as_str());
         self.fallback_facename.iter().for_each(|f| {
             font_family.push(f.as_str());
-        });
+        };
 
         elem = elem
             .set("font-family", format!("'{}'", font_family.join("','")))

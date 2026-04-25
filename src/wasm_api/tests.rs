@@ -41,7 +41,7 @@
         let result = doc.render_page_svg_native(999);
         assert!(result.is_err());
         match result.unwrap_err() {
-            HwpError::PageOutOfRange(n) => assert_eq!(n, 999),
+            HwpError::PageOutOfRange { page: n } => assert_eq!(n, 999),
             _ => panic!("Expected PageOutOfRange error"),
         }
     }
@@ -93,7 +93,7 @@
                 },
             ],
             raw_stream: None,
-        });
+        };
         doc.set_document(document);
 
         assert_eq!(doc.page_count(), 1);
@@ -149,9 +149,9 @@
 
     #[test]
     fn test_hwp_error_display() {
-        let err = HwpError::InvalidFile("테스트".to_string());
+        let err = HwpError::InvalidFile { message: "테스트".to_string() };
         assert!(err.to_string().contains("테스트"));
-        let err = HwpError::PageOutOfRange(5);
+        let err = HwpError::PageOutOfRange { page: 5 };
         assert!(err.to_string().contains("5"));
     }
 
@@ -280,7 +280,7 @@
             },
             paragraphs: vec![parent_para],
             raw_stream: None,
-        });
+        };
         doc.set_document(document);
         doc
     }
@@ -1404,7 +1404,7 @@
         document.sections.push(Section {
             paragraphs: vec![para],
             ..Default::default()
-        });
+        };
         doc.set_document(document);
 
         // "World" 복사 (offset 6~11)
@@ -1462,7 +1462,7 @@
                 make_para("세 번째 문단"),
             ],
             ..Default::default()
-        });
+        };
         doc.set_document(document);
 
         // 첫 번째 문단 3번째 글자부터 두 번째 문단 3번째 글자까지 복사
@@ -1519,7 +1519,7 @@
         document.sections.push(Section {
             paragraphs: vec![para],
             ..Default::default()
-        });
+        };
         doc.set_document(document);
 
         // 복사
@@ -1548,7 +1548,7 @@
         document.sections.push(Section {
             paragraphs: vec![para],
             ..Default::default()
-        });
+        };
         doc.set_document(document);
 
         // 클립보드 비어있는 상태에서 붙여넣기
@@ -1589,7 +1589,7 @@
         document.sections.push(Section {
             paragraphs: vec![para],
             ..Default::default()
-        });
+        };
         doc.set_document(document);
 
         // HTML 내보내기
@@ -1628,7 +1628,7 @@
         document.sections.push(Section {
             paragraphs: vec![para],
             ..Default::default()
-        });
+        };
         doc.set_document(document);
 
         // 부분 선택 (B, C, D)
@@ -1673,7 +1673,7 @@
             .collect();
         para.line_segs = vec![crate::model::paragraph::LineSeg::default()];
         para.has_para_text = true;
-        document.sections.push(Section { paragraphs: vec![para], ..Default::default() });
+        document.sections.push(Section { paragraphs: vec![para], ..Default::default() };
         doc.set_document(document);
 
         // 플레인 텍스트 HTML 붙여넣기
@@ -1703,7 +1703,7 @@
             .collect();
         para.line_segs = vec![crate::model::paragraph::LineSeg::default()];
         para.has_para_text = true;
-        document.sections.push(Section { paragraphs: vec![para], ..Default::default() });
+        document.sections.push(Section { paragraphs: vec![para], ..Default::default() };
         doc.set_document(document);
 
         // 볼드+색상 스타일 HTML
@@ -1742,7 +1742,7 @@
             .collect();
         para.line_segs = vec![crate::model::paragraph::LineSeg::default()];
         para.has_para_text = true;
-        document.sections.push(Section { paragraphs: vec![para], ..Default::default() });
+        document.sections.push(Section { paragraphs: vec![para], ..Default::default() };
         doc.set_document(document);
 
         // 다중 문단 HTML
@@ -1774,7 +1774,7 @@
         para.char_count = 0;
         para.line_segs = vec![crate::model::paragraph::LineSeg::default()];
         para.has_para_text = true;
-        document.sections.push(Section { paragraphs: vec![para], ..Default::default() });
+        document.sections.push(Section { paragraphs: vec![para], ..Default::default() };
         doc.set_document(document);
 
         // 2×2 표 HTML
@@ -1862,7 +1862,7 @@
         document.sections.push(crate::model::document::Section {
             paragraphs: vec![para],
             ..Default::default()
-        });
+        };
         doc.document = document;
 
         // &nbsp; 만 포함된 셀이 있는 2×2 표 (셀2, 셀4는 빈 셀)
@@ -1902,7 +1902,7 @@
         para.char_count = 0;
         para.line_segs = vec![crate::model::paragraph::LineSeg::default()];
         para.has_para_text = true;
-        document.sections.push(Section { paragraphs: vec![para], ..Default::default() });
+        document.sections.push(Section { paragraphs: vec![para], ..Default::default() };
         doc.set_document(document);
 
         // colspan=2, rowspan=2 포함 표
@@ -1952,7 +1952,7 @@
         para.char_count = 0;
         para.line_segs = vec![crate::model::paragraph::LineSeg::default()];
         para.has_para_text = true;
-        document.sections.push(Section { paragraphs: vec![para], ..Default::default() });
+        document.sections.push(Section { paragraphs: vec![para], ..Default::default() };
         doc.set_document(document);
 
         // CSS 스타일 포함 표
@@ -2008,7 +2008,7 @@
         para.char_count = 0;
         para.line_segs = vec![crate::model::paragraph::LineSeg::default()];
         para.has_para_text = true;
-        document.sections.push(Section { paragraphs: vec![para], ..Default::default() });
+        document.sections.push(Section { paragraphs: vec![para], ..Default::default() };
         doc.set_document(document);
 
         // <th> 헤더 포함 표
@@ -4790,7 +4790,7 @@
             eprintln!("  {}: {} → {} ({}{}){}",
                 name, orig_cnt, saved_cnt,
                 if diff > 0 { "+" } else { "" }, diff,
-                if diff != 0 { " ← DIFF" } else { "" });
+                if diff != 0 { " ← DIFF" } else { "" };
         }
 
         // PARA_HEADER/PARA_TEXT consistency
@@ -5481,7 +5481,7 @@
                     eprintln!("\n  Pair {}: damaged[{}] {}{} ({}B) vs fixed[{}] {}{} ({}B) => {}",
                         j, d_idx, d_tag_name, d_ctrl_type, d_rec.data.len(),
                         f_idx, f_tag_name, f_ctrl_type, f_rec.data.len(),
-                        if same { "IDENTICAL" } else { "DIFFERENT" });
+                        if same { "IDENTICAL" } else { "DIFFERENT" };
 
                     if !same {
                         body_diff_count += 1;
@@ -5497,7 +5497,7 @@
                         }
                         eprintln!("    {} byte(s) differ at positions: {:?}",
                             diff_positions.len(),
-                            if diff_positions.len() <= 30 { &diff_positions[..] } else { &diff_positions[..30] });
+                            if diff_positions.len() <= 30 { &diff_positions[..] } else { &diff_positions[..30] };
 
                         // Hex dump of first 80 bytes for both
                         let dump_len = 80.min(max_len);
@@ -5506,9 +5506,9 @@
                         let f_hex: String = f_rec.data.iter().take(dump_len)
                             .map(|b| format!("{:02X}", b)).collect::<Vec<_>>().join(" ");
                         eprintln!("    Damaged (first {}B): {}{}", dump_len, d_hex,
-                            if d_rec.data.len() > dump_len { "..." } else { "" });
+                            if d_rec.data.len() > dump_len { "..." } else { "" };
                         eprintln!("    Fixed   (first {}B): {}{}", dump_len, f_hex,
-                            if f_rec.data.len() > dump_len { "..." } else { "" });
+                            if f_rec.data.len() > dump_len { "..." } else { "" };
                     }
                 }
                 (Some(&(d_idx, d_rec)), None) => {
@@ -5647,7 +5647,7 @@
                 name, orig_cnt, saved_cnt,
                 if diff != 0 { "<<< " } else { "" },
                 diff,
-                if diff != 0 { " >>>" } else { "" });
+                if diff != 0 { " >>>" } else { "" };
         }
 
         // ============================================================
@@ -6122,7 +6122,7 @@
                     eprintln!("  [{}] consistency: BF={} CS={} PS={}", label,
                         if bf_ok { "OK" } else { "MISMATCH!" },
                         if cs_ok { "OK" } else { "MISMATCH!" },
-                        if ps_ok { "OK" } else { "MISMATCH!" });
+                        if ps_ok { "OK" } else { "MISMATCH!" };
                 }
             } else {
                 eprintln!("  [{}] ID_MAPPINGS not found!", label);
@@ -6387,7 +6387,7 @@
                                     let cs_id = u32::from_le_bytes([pcs.data[off+4], pcs.data[off+5], pcs.data[off+6], pcs.data[off+7]]);
                                     let valid = (cs_id as usize) < cs_count;
                                     eprintln!("          [{}] start_pos={} char_shape_id={} {}",
-                                        ei, start_pos, cs_id, if valid { "OK" } else { "*** INVALID ***" });
+                                        ei, start_pos, cs_id, if valid { "OK" } else { "*** INVALID ***" };
                                     if !valid {
                                         cell_issues.push(format!("Cell[{}] PARA[{}] PARA_CHAR_SHAPE entry[{}]: char_shape_id={} >= {} (invalid)",
                                             ci, para_count, ei, cs_id, cs_count));
@@ -6629,7 +6629,7 @@
                 name, orig_cnt, saved_cnt,
                 if diff != 0 { "<<< " } else { "" },
                 diff,
-                if diff != 0 { " >>>" } else { "" });
+                if diff != 0 { " >>>" } else { "" };
         }
 
         // ============================================================
@@ -6720,7 +6720,7 @@
                 doc_info_records,
                 body_records,
                 body_raw_len,
-            });
+            };
         }
 
         // ============================================================
@@ -9555,7 +9555,7 @@
             id: 1,
             data: ref_bincontent.data.clone(),
             extension: ref_bincontent.extension.clone(),
-        });
+        };
 
         // 4. Picture 컨트롤 구성 (참조 파일의 정확한 값 사용)
         let picture = crate::model::image::Picture {
@@ -10024,7 +10024,7 @@
                         if diff_count > 10 { eprintln!("  ... 외 {} 개", diff_count - 10); }
                         eprintln!("  일치: {}/{} ({}%)",
                             max.saturating_sub(diff_count), max,
-                            if max > 0 { (max.saturating_sub(diff_count)) * 100 / max } else { 100 });
+                            if max > 0 { (max.saturating_sub(diff_count)) * 100 / max } else { 100 };
 
                         // 표 안 이미지 보존 확인
                         let mut pic_in_cell = false;
@@ -10045,7 +10045,7 @@
                                 }
                             }
                         }
-                        eprintln!("  표 안 이미지 보존: {}", if pic_in_cell { "✓" } else { "✗" });
+                        eprintln!("  표 안 이미지 보존: {}", if pic_in_cell { "✓" } else { "✗" };
                         assert!(pic_in_cell, "라운드트립 후 표 안 이미지가 사라짐!");
                     }
                     Err(e) => eprintln!("  재파싱 실패: {}", e),
@@ -10258,7 +10258,7 @@
 
             eprintln!("  레코드: 원본={} 저장={} {}",
                 orig_recs.len(), saved_recs.len(),
-                if orig_recs.len() == saved_recs.len() { "✓" } else { "✗" });
+                if orig_recs.len() == saved_recs.len() { "✓" } else { "✗" };
 
             // 레코드 차이 요약 (다른 레코드만)
             let mut diff_count = 0;
@@ -10280,7 +10280,7 @@
                 eprintln!("  ... 외 {} 개 차이", diff_count - 5);
             }
             eprintln!("  일치: {}/{} 레코드 ({}%)", max_recs - diff_count, max_recs,
-                if max_recs > 0 { (max_recs - diff_count) * 100 / max_recs } else { 100 });
+                if max_recs > 0 { (max_recs - diff_count) * 100 / max_recs } else { 100 };
 
             if all_match {
                 eprintln!("  → 라운드트립 성공 ✓");
@@ -10369,7 +10369,7 @@
             id: 1,
             data: ref_bincontent.data.clone(),
             extension: ref_bincontent.extension.clone(),
-        });
+        };
 
         // 4. DocInfo에 BorderFill 추가 (표 테두리용)
         use crate::model::style::{BorderFill, BorderLine, BorderLineType, DiagonalLine, Fill};
@@ -11164,7 +11164,7 @@
                                     eprintln!("        cell[{}].p[{}]: cc={} msb={} psid={} sid={} text='{}'{}",
                                         ci, cpi, cp.char_count, cp_msb,
                                         cp.para_shape_id, cp.style_id, cp_text,
-                                        if cp_last { " <CELL_LAST>" } else { "" });
+                                        if cp_last { " <CELL_LAST>" } else { "" };
                                 }
                             }
                         }
@@ -11187,7 +11187,7 @@
                                     eprintln!("        textbox.p[{}]: cc={} msb={} psid={} text='{}'{}",
                                         tpi, tp.char_count, tp_msb,
                                         tp.para_shape_id, tp_text,
-                                        if tp_last { " <TB_LAST>" } else { "" });
+                                        if tp_last { " <TB_LAST>" } else { "" };
                                 }
                             }
                         }
@@ -11225,7 +11225,7 @@
 
             eprintln!("  Section {}: total={} MSB_T={} MSB_F={} last_msb={}",
                 si, para_count, msb_true_count, msb_false_count,
-                if last_para_msb { "T" } else { "F" });
+                if last_para_msb { "T" } else { "F" };
 
             if !mid_para_msb_true.is_empty() {
                 eprintln!("    ** 중간 문단에서 MSB=T: {:?}", mid_para_msb_true);
@@ -11301,7 +11301,7 @@
         assert!(saved1.is_ok(), "1차 저장 실패");
         let saved1_data = saved1.unwrap();
         let parse1 = HwpDocument::from_bytes(&saved1_data);
-        eprintln!("1회 분할 후 저장+재파싱: {}", if parse1.is_ok() { "성공" } else { "실패" });
+        eprintln!("1회 분할 후 저장+재파싱: {}", if parse1.is_ok() { "성공" } else { "실패" };
 
         // === 엔터 2회 (새 문단의 시작에서 다시 분할) ===
         let new_para_idx = target_para + 1;
@@ -11328,7 +11328,7 @@
 
         // 재파싱 테스트
         let parse2 = HwpDocument::from_bytes(&saved2_data);
-        eprintln!("2회 분할 후 저장+재파싱: {}", if parse2.is_ok() { "성공" } else { "실패" });
+        eprintln!("2회 분할 후 저장+재파싱: {}", if parse2.is_ok() { "성공" } else { "실패" };
 
         // 직렬화된 Section0 레코드 분석 - 분할 영역 주변만 상세 출력
         eprintln!("\n=== Section0 직렬화 레코드 분석 (level 0만, 분할 영역) ===");
@@ -11555,7 +11555,7 @@
         assert!(!para1.text.is_empty(), "para[1]에 텍스트가 있어야 함");
         let has_treat_as_char_table = para1.controls.iter().any(|c| {
             matches!(c, Control::Table(t) if t.attr & 0x01 != 0)
-        });
+        };
         assert!(has_treat_as_char_table, "para[1]에 treat_as_char Table이 있어야 함");
 
         // compose: 2개 줄 이상
@@ -12507,12 +12507,12 @@
                         let max_col_extent = t.cells.iter().map(|c| c.col + c.col_span).max().unwrap_or(0);
                         eprintln!("  col_count={} 최대열범위={} {}",
                             t.col_count, max_col_extent,
-                            if t.col_count == max_col_extent { "OK" } else { "*** MISMATCH ***" });
+                            if t.col_count == max_col_extent { "OK" } else { "*** MISMATCH ***" };
 
                         let max_row_extent = t.cells.iter().map(|c| c.row + c.row_span).max().unwrap_or(0);
                         eprintln!("  row_count={} 최대행범위={} {}",
                             t.row_count, max_row_extent,
-                            if t.row_count == max_row_extent { "OK" } else { "*** MISMATCH ***" });
+                            if t.row_count == max_row_extent { "OK" } else { "*** MISMATCH ***" };
                     }
                 }
             }
@@ -12534,7 +12534,7 @@
                                 _ => 0,
                             };
                             mask | (1u32 << bit)
-                        });
+                        };
                         let mask_ok = if para.controls.is_empty() {
                             para.control_mask == 0
                         } else {
@@ -14235,7 +14235,7 @@
                         } else {
                             false
                         }
-                    });
+                    };
 
                     if !has_email_field {
                         // Brief summary for non-email paragraphs
@@ -14415,7 +14415,7 @@
                         }
                     }
                     false
-                });
+                };
 
                 if !has_email {
                     continue;
@@ -14725,7 +14725,7 @@
                                 (f.command.contains("메일") || f.command.contains("mail") || f.command.contains("Mail") ||
                                  f.ctrl_data_name.as_ref().map_or(false, |n| n.contains("메일") || n.contains("mail") || n.contains("Mail")))
                             } else { false }
-                        });
+                        };
                         if !has_email { continue; }
 
                         // Re-serialize
@@ -14755,7 +14755,7 @@
                                     let cmd = String::from_utf16_lossy(&w);
                                     cmd.contains("메일") || cmd.contains("mail") || cmd.contains("Mail")
                                 } else { false }
-                            });
+                            };
                             if !has_field { continue; }
 
                             // Find PARA_TEXT in this paragraph
@@ -15290,14 +15290,14 @@
                 PageItem::PartialParagraph { para_index, .. } |
                 PageItem::PartialTable { para_index, .. } |
                 PageItem::Shape { para_index, .. } => *para_index,
-            });
+            };
             let pi2_first = items2.and_then(|i| i.first()).map(|it| match it {
                 PageItem::FullParagraph { para_index } |
                 PageItem::Table { para_index, .. } |
                 PageItem::PartialParagraph { para_index, .. } |
                 PageItem::PartialTable { para_index, .. } |
                 PageItem::Shape { para_index, .. } => *para_index,
-            });
+            };
             let count1 = items1.map(|i| i.len()).unwrap_or(0);
             let count2 = items2.map(|i| i.len()).unwrap_or(0);
 

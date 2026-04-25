@@ -43,7 +43,7 @@ impl Scan {
         if count % 2 != 0 {
             return Err(crate::wmf::parser::ParseError::UnexpectedPattern {
                 cause: format!("The count field `{count}` must be even value"),
-            });
+            };
         }
 
         let line_count = count as usize / 2;
@@ -65,7 +65,7 @@ impl Scan {
                     "The count field `{count}` and count2 field `{count2}` \
                      must have same value"
                 ),
-            });
+            };
         }
 
         Ok((Self { count, top, bottom, scan_lines, count2 }, consumed_bytes))

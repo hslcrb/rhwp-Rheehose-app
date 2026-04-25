@@ -44,7 +44,7 @@ impl DocumentCore {
     ) -> Result<String, HwpError> {
         let table = self.get_table_mut(section_idx, parent_para_idx, control_idx)?;
         table.insert_row(row_idx, below)
-            .map_err(|e| HwpError::RenderError(e))?;
+            .map_err(|e| HwpError::RenderError { message: e })?;
         table.dirty = true;
         let row_count = table.row_count;
         let col_count = table.col_count;
@@ -68,7 +68,7 @@ impl DocumentCore {
     ) -> Result<String, HwpError> {
         let table = self.get_table_mut(section_idx, parent_para_idx, control_idx)?;
         table.insert_column(col_idx, right)
-            .map_err(|e| HwpError::RenderError(e))?;
+            .map_err(|e| HwpError::RenderError { message: e })?;
         table.dirty = true;
         let row_count = table.row_count;
         let col_count = table.col_count;
@@ -91,7 +91,7 @@ impl DocumentCore {
     ) -> Result<String, HwpError> {
         let table = self.get_table_mut(section_idx, parent_para_idx, control_idx)?;
         table.delete_row(row_idx)
-            .map_err(|e| HwpError::RenderError(e))?;
+            .map_err(|e| HwpError::RenderError { message: e })?;
         table.dirty = true;
         let row_count = table.row_count;
         let col_count = table.col_count;
@@ -114,7 +114,7 @@ impl DocumentCore {
     ) -> Result<String, HwpError> {
         let table = self.get_table_mut(section_idx, parent_para_idx, control_idx)?;
         table.delete_column(col_idx)
-            .map_err(|e| HwpError::RenderError(e))?;
+            .map_err(|e| HwpError::RenderError { message: e })?;
         table.dirty = true;
         let row_count = table.row_count;
         let col_count = table.col_count;
@@ -140,7 +140,7 @@ impl DocumentCore {
     ) -> Result<String, HwpError> {
         let table = self.get_table_mut(section_idx, parent_para_idx, control_idx)?;
         table.merge_cells(start_row, start_col, end_row, end_col)
-            .map_err(|e| HwpError::RenderError(e))?;
+            .map_err(|e| HwpError::RenderError { message: e })?;
         table.dirty = true;
         let cell_count = table.cells.len();
 
@@ -162,7 +162,7 @@ impl DocumentCore {
     ) -> Result<String, HwpError> {
         let table = self.get_table_mut(section_idx, parent_para_idx, control_idx)?;
         table.split_cell(row, col)
-            .map_err(|e| HwpError::RenderError(e))?;
+            .map_err(|e| HwpError::RenderError { message: e })?;
         table.dirty = true;
         let cell_count = table.cells.len();
 
@@ -189,7 +189,7 @@ impl DocumentCore {
     ) -> Result<String, HwpError> {
         let table = self.get_table_mut(section_idx, parent_para_idx, control_idx)?;
         table.split_cell_into(row, col, n_rows, m_cols, equal_row_height, merge_first)
-            .map_err(|e| HwpError::RenderError(e))?;
+            .map_err(|e| HwpError::RenderError { message: e })?;
         table.dirty = true;
         let cell_count = table.cells.len();
 
@@ -217,7 +217,7 @@ impl DocumentCore {
     ) -> Result<String, HwpError> {
         let table = self.get_table_mut(section_idx, parent_para_idx, control_idx)?;
         table.split_cells_in_range(start_row, start_col, end_row, end_col, n_rows, m_cols, equal_row_height)
-            .map_err(|e| HwpError::RenderError(e))?;
+            .map_err(|e| HwpError::RenderError { message: e })?;
         table.dirty = true;
         let cell_count = table.cells.len();
 
@@ -236,13 +236,13 @@ impl DocumentCore {
         control_idx: usize,
     ) -> Result<String, HwpError> {
         let para = self.document.sections.get(section_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("구역 인덱스 {} 범위 초과", section_idx)))?
+            .ok_or_else(|| HwpError::RenderError { message: format!("구역 인덱스 {} 범위 초과", section_idx) })?
             .paragraphs.get(parent_para_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("문단 인덱스 {} 범위 초과", parent_para_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("문단 인덱스 {} 범위 초과", parent_para_idx) })?;
 
         let table = match para.controls.get(control_idx) {
             Some(Control::Table(t)) => t,
-            _ => return Err(HwpError::RenderError("지정된 컨트롤이 표가 아닙니다".to_string())),
+            _ => return Err(HwpError::RenderError { message: "지정된 컨트롤이 표가 아닙니다".to_string() }),
         };
 
         Ok(format!(
@@ -260,17 +260,17 @@ impl DocumentCore {
         cell_idx: usize,
     ) -> Result<String, HwpError> {
         let para = self.document.sections.get(section_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("구역 인덱스 {} 범위 초과", section_idx)))?
+            .ok_or_else(|| HwpError::RenderError { message: format!("구역 인덱스 {} 범위 초과", section_idx) })?
             .paragraphs.get(parent_para_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("문단 인덱스 {} 범위 초과", parent_para_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("문단 인덱스 {} 범위 초과", parent_para_idx) })?;
 
         let table = match para.controls.get(control_idx) {
             Some(Control::Table(t)) => t,
-            _ => return Err(HwpError::RenderError("지정된 컨트롤이 표가 아닙니다".to_string())),
+            _ => return Err(HwpError::RenderError { message: "지정된 컨트롤이 표가 아닙니다".to_string() }),
         };
 
         let cell = table.cells.get(cell_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("셀 인덱스 {} 범위 초과 (총 {}개)", cell_idx, table.cells.len())))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("셀 인덱스 {} 범위 초과 (총 {}개)", cell_idx, table.cells.len()) })?;
 
         Ok(format!(
             "{{\"row\":{},\"col\":{},\"rowSpan\":{},\"colSpan\":{}}}",
@@ -341,17 +341,17 @@ impl DocumentCore {
         cell_idx: usize,
     ) -> Result<String, HwpError> {
         let para = self.document.sections.get(section_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("구역 인덱스 {} 범위 초과", section_idx)))?
+            .ok_or_else(|| HwpError::RenderError { message: format!("구역 인덱스 {} 범위 초과", section_idx) })?
             .paragraphs.get(parent_para_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("문단 인덱스 {} 범위 초과", parent_para_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("문단 인덱스 {} 범위 초과", parent_para_idx) })?;
 
         let table = match para.controls.get(control_idx) {
             Some(Control::Table(t)) => t,
-            _ => return Err(HwpError::RenderError("지정된 컨트롤이 표가 아닙니다".to_string())),
+            _ => return Err(HwpError::RenderError { message: "지정된 컨트롤이 표가 아닙니다".to_string() }),
         };
 
         let cell = table.cells.get(cell_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("셀 인덱스 {} 범위 초과", cell_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("셀 인덱스 {} 범위 초과", cell_idx) })?;
 
         let va = match cell.vertical_align {
             crate::model::table::VerticalAlign::Top => 0,
@@ -386,7 +386,7 @@ impl DocumentCore {
 
         let table = self.get_table_mut(section_idx, parent_para_idx, control_idx)?;
         let cell = table.cells.get_mut(cell_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("셀 인덱스 {} 범위 초과", cell_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("셀 인덱스 {} 범위 초과", cell_idx) })?;
 
         if let Some(v) = json_u32(json, "width") { cell.width = v; }
         if let Some(v) = json_u32(json, "height") { cell.height = v; }
@@ -435,7 +435,7 @@ impl DocumentCore {
             let (target_row, target_col, target_col_span, target_row_span) = {
                 let table = self.get_table_mut(section_idx, parent_para_idx, control_idx)?;
                 let cell = table.cells.get_mut(cell_idx)
-                    .ok_or_else(|| HwpError::RenderError(format!("셀 인덱스 {} 범위 초과", cell_idx)))?;
+                    .ok_or_else(|| HwpError::RenderError { message: format!("셀 인덱스 {} 범위 초과", cell_idx) })?;
                 cell.border_fill_id = new_bf_id;
                 (cell.row as usize, cell.col as usize, cell.col_span as usize, cell.row_span as usize)
             };
@@ -574,7 +574,7 @@ impl DocumentCore {
         // JSON 배열을 수동 파싱: [{"cellIdx":N,"widthDelta":D,"heightDelta":D}, ...]
         let trimmed = json.trim();
         if !trimmed.starts_with('[') || !trimmed.ends_with(']') {
-            return Err(HwpError::RenderError("잘못된 JSON 배열 형식".to_string()));
+            return Err(HwpError::RenderError { message: "잘못된 JSON 배열 형식".to_string() });
         }
         let inner = &trimmed[1..trimmed.len()-1];
 
@@ -770,13 +770,13 @@ impl DocumentCore {
         control_idx: usize,
     ) -> Result<String, HwpError> {
         let para = self.document.sections.get(section_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("구역 인덱스 {} 범위 초과", section_idx)))?
+            .ok_or_else(|| HwpError::RenderError { message: format!("구역 인덱스 {} 범위 초과", section_idx) })?
             .paragraphs.get(parent_para_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("문단 인덱스 {} 범위 초과", parent_para_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("문단 인덱스 {} 범위 초과", parent_para_idx) })?;
 
         let table = match para.controls.get(control_idx) {
             Some(Control::Table(t)) => t,
-            _ => return Err(HwpError::RenderError("지정된 컨트롤이 표가 아닙니다".to_string())),
+            _ => return Err(HwpError::RenderError { message: "지정된 컨트롤이 표가 아닙니다".to_string() }),
         };
 
         let pb = match table.page_break {
@@ -1303,12 +1303,12 @@ impl DocumentCore {
     ) -> Result<String, HwpError> {
         // 표 가져오기
         let section = self.document.sections.get(section_idx)
-            .ok_or_else(|| HwpError::RenderError("구역 초과".into()))?;
+            .ok_or_else(|| HwpError::RenderError { message: "구역 초과".into() })?;
         let para = section.paragraphs.get(parent_para_idx)
-            .ok_or_else(|| HwpError::RenderError("문단 초과".into()))?;
+            .ok_or_else(|| HwpError::RenderError { message: "문단 초과".into() })?;
         let table = match para.controls.get(control_idx) {
             Some(Control::Table(t)) => t,
-            _ => return Err(HwpError::RenderError("표 컨트롤이 아님".into())),
+            _ => return Err(HwpError::RenderError { message: "표 컨트롤이 아님".into() }),
         };
 
         let row_count = table.row_count as usize;
@@ -1331,7 +1331,7 @@ impl DocumentCore {
         };
 
         let result = crate::document_core::table_calc::evaluate_formula(formula, &ctx, &get_cell)
-            .map_err(|e| HwpError::RenderError(format!("계산식 오류: {}", e)))?;
+            .map_err(|e| HwpError::RenderError { message: format!("계산식 오류: {}", e) })?;
 
         // 결과를 셀에 기록
         if write_result {

@@ -76,7 +76,7 @@ impl Region {
         if object_type != 0x0006 {
             return Err(crate::wmf::parser::ParseError::UnexpectedPattern {
                 cause: "The object_type field must be 0x0006".to_owned(),
-            });
+            };
         }
 
         Ok((

@@ -525,7 +525,7 @@ impl crate::wmf::converter::Player for SVGPlayer {
                 self.context_current.point_s_to_absolute_point(&PointS {
                     x: record.x_start_arc,
                     y: record.y_start_arc,
-                });
+                };
 
             self.context_current = self.context_current.extend_window(&point);
             point
@@ -535,7 +535,7 @@ impl crate::wmf::converter::Player for SVGPlayer {
                 self.context_current.point_s_to_absolute_point(&PointS {
                     x: record.x_end_arc,
                     y: record.y_end_arc,
-                });
+                };
 
             self.context_current = self.context_current.extend_window(&point);
             point
@@ -547,7 +547,7 @@ impl crate::wmf::converter::Player for SVGPlayer {
         let center = self.context_current.point_s_to_absolute_point(&PointS {
             x: record.left_rect + rx,
             y: record.top_rect + ry,
-        });
+        };
         // Start and end vectors relative to the center of the ellipse
         let start_dx = f32::from(start.x - center.x);
         let start_dy = f32::from(start.y - center.y);
@@ -597,18 +597,18 @@ impl crate::wmf::converter::Player for SVGPlayer {
         let center = self.context_current.point_s_to_absolute_point(&PointS {
             x: record.left_rect + rx,
             y: record.top_rect + ry,
-        });
+        };
 
         // Convert radial endpoints from WMF coordinates to SVG absolute
         // coordinates
         let p1 = self.context_current.point_s_to_absolute_point(&PointS {
             x: record.x_radial1,
             y: record.y_radial1,
-        });
+        };
         let p2 = self.context_current.point_s_to_absolute_point(&PointS {
             x: record.x_radial2,
             y: record.y_radial2,
-        });
+        };
 
         // Build SVG path for chord: move to first radial, draw arc, line to
         // center, close path
@@ -686,7 +686,7 @@ impl crate::wmf::converter::Player for SVGPlayer {
                 self.context_current.point_s_to_absolute_point(&PointS {
                     x: record.left_rect + rx,
                     y: record.top_rect + ry,
-                });
+                };
 
             self.context_current = self.context_current.extend_window(&point);
             point
@@ -987,7 +987,7 @@ impl crate::wmf::converter::Player for SVGPlayer {
                 self.context_current.point_s_to_absolute_point(&PointS {
                     x: record.x,
                     y: record.y,
-                });
+                };
 
             self.context_current = self.context_current.extend_window(&point);
             point
@@ -1110,7 +1110,7 @@ impl crate::wmf::converter::Player for SVGPlayer {
                 self.context_current.point_s_to_absolute_point(&PointS {
                     x: record.x_radial1,
                     y: record.y_radial1,
-                });
+                };
 
             self.context_current = self.context_current.extend_window(&point);
             point
@@ -1120,7 +1120,7 @@ impl crate::wmf::converter::Player for SVGPlayer {
                 self.context_current.point_s_to_absolute_point(&PointS {
                     x: center_x,
                     y: center_y,
-                });
+                };
             self.context_current = self.context_current.extend_window(&point);
             point
         };
@@ -1129,7 +1129,7 @@ impl crate::wmf::converter::Player for SVGPlayer {
                 self.context_current.point_s_to_absolute_point(&PointS {
                     x: record.x_radial2,
                     y: record.y_radial2,
-                });
+                };
 
             self.context_current = self.context_current.extend_window(&point);
             point
@@ -1163,7 +1163,7 @@ impl crate::wmf::converter::Player for SVGPlayer {
         let Some(point) = record.a_points.first() else {
             return Err(PlayError::InvalidRecord {
                 cause: "aPoints[0] is not defined".to_owned(),
-            });
+            };
         };
 
         let mut coordinate = {
@@ -1179,7 +1179,7 @@ impl crate::wmf::converter::Player for SVGPlayer {
             let Some(point) = record.a_points.get(i as usize) else {
                 return Err(PlayError::InvalidRecord {
                     cause: format!("aPoints[{i}] is not defined"),
-                });
+                };
             };
 
             coordinate = {
@@ -1235,7 +1235,7 @@ impl crate::wmf::converter::Player for SVGPlayer {
             let Some(point) = record.a_points.get(i as usize) else {
                 return Err(PlayError::InvalidRecord {
                     cause: format!("aPoints[{i}] is not defined"),
-                });
+                };
             };
 
             let point = {
@@ -1290,7 +1290,7 @@ impl crate::wmf::converter::Player for SVGPlayer {
             else {
                 return Err(PlayError::InvalidRecord {
                     cause: format!("aPointsPerPolygon[{i}] is not defined"),
-                });
+                };
             };
 
             let mut points = Vec::with_capacity(*points_of_polygon as usize);
@@ -1301,7 +1301,7 @@ impl crate::wmf::converter::Player for SVGPlayer {
                         cause: format!(
                             "aPoints[{current_point_index}] is not defined"
                         ),
-                    });
+                    };
                 };
 
                 let point = {
@@ -1353,7 +1353,7 @@ impl crate::wmf::converter::Player for SVGPlayer {
                 self.context_current.point_s_to_absolute_point(&PointS {
                     x: record.left_rect,
                     y: record.top_rect,
-                });
+                };
 
             self.context_current = self.context_current.extend_window(&point);
             point
@@ -1363,7 +1363,7 @@ impl crate::wmf::converter::Player for SVGPlayer {
                 self.context_current.point_s_to_absolute_point(&PointS {
                     x: record.right_rect,
                     y: record.bottom_rect,
-                });
+                };
 
             self.context_current = self.context_current.extend_window(&point);
             point
@@ -1422,7 +1422,7 @@ impl crate::wmf::converter::Player for SVGPlayer {
                 self.context_current.point_s_to_absolute_point(&PointS {
                     x: record.left_rect,
                     y: record.top_rect,
-                });
+                };
 
             self.context_current = self.context_current.extend_window(&point);
             point
@@ -1732,7 +1732,7 @@ impl crate::wmf::converter::Player for SVGPlayer {
         let GraphicsObject::Palette(palette) = object else {
             return Err(PlayError::UnexpectedGraphicsObject {
                 cause: "Graphics Object is not palette object".to_owned(),
-            });
+            };
         };
 
         self.object_selected = self.object_selected.palette(palette.clone());
@@ -1790,7 +1790,7 @@ impl crate::wmf::converter::Player for SVGPlayer {
             top,
             right,
             bottom,
-        });
+        };
 
         Ok(self)
     }
@@ -1807,7 +1807,7 @@ impl crate::wmf::converter::Player for SVGPlayer {
     ) -> Result<Self, PlayError> {
         let point = self
             .context_current
-            .point_s_to_absolute_point(&PointS { x: record.x, y: record.y });
+            .point_s_to_absolute_point(&PointS { x: record.x, y: record.y };
         self.context_current =
             self.context_current.extend_window(&point).drawing_position(point);
 

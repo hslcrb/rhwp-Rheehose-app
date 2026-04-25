@@ -31,13 +31,13 @@ impl META_EOF {
         if record_size.word_size() != 3 {
             return Err(crate::wmf::parser::ParseError::UnexpectedPattern {
                 cause: "The record_size must be `3`".to_owned(),
-            });
+            };
         }
 
         if record_function != 0x0000 {
             return Err(crate::wmf::parser::ParseError::UnexpectedPattern {
                 cause: "The record_function field must be `0x0000`".to_owned(),
-            });
+            };
         }
 
         Ok(Self { record_size, record_function })

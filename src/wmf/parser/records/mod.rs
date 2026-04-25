@@ -24,7 +24,7 @@ fn check_lower_byte_matches(
                  `{record_function:#06X}` field must be same as `{:#06X}`",
                 record_type as u16
             ),
-        });
+        };
     }
 
     Ok(())

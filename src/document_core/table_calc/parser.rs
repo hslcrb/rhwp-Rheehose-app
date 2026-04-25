@@ -209,7 +209,7 @@ mod tests {
             op: BinOpKind::Add,
             left: Box::new(FormulaNode::Number(1.0)),
             right: Box::new(FormulaNode::Number(2.0)),
-        });
+        };
     }
 
     #[test]
@@ -217,8 +217,8 @@ mod tests {
         let ast = parse_formula("=A1+B3").unwrap();
         match ast {
             FormulaNode::BinOp { op: BinOpKind::Add, left, right } => {
-                assert_eq!(*left, FormulaNode::CellRef { col: 'A', row: 1 });
-                assert_eq!(*right, FormulaNode::CellRef { col: 'B', row: 3 });
+                assert_eq!(*left, FormulaNode::CellRef { col: 'A', row: 1 };
+                assert_eq!(*right, FormulaNode::CellRef { col: 'B', row: 3 };
             }
             _ => panic!("expected BinOp"),
         }
@@ -233,8 +233,8 @@ mod tests {
                 assert_eq!(args.len(), 1);
                 match &args[0] {
                     FormulaNode::Range { start, end } => {
-                        assert_eq!(**start, FormulaNode::CellRef { col: 'A', row: 1 });
-                        assert_eq!(**end, FormulaNode::CellRef { col: 'B', row: 5 });
+                        assert_eq!(**start, FormulaNode::CellRef { col: 'A', row: 1 };
+                        assert_eq!(**end, FormulaNode::CellRef { col: 'B', row: 5 };
                     }
                     _ => panic!("expected Range"),
                 }
@@ -276,7 +276,7 @@ mod tests {
         let ast = parse_formula("=-A1").unwrap();
         match ast {
             FormulaNode::Negate(inner) => {
-                assert_eq!(*inner, FormulaNode::CellRef { col: 'A', row: 1 });
+                assert_eq!(*inner, FormulaNode::CellRef { col: 'A', row: 1 };
             }
             _ => panic!("expected Negate"),
         }

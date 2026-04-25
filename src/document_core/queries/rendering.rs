@@ -119,7 +119,7 @@ impl DocumentCore {
     /// 구역 정의(SectionDef)를 JSON으로 반환 (네이티브 에러 타입)
     pub fn get_section_def_native(&self, section_idx: usize) -> Result<String, HwpError> {
         let section = self.document.sections.get(section_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("구역 {} 범위 초과", section_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("구역 {} 범위 초과", section_idx) })?;
         let sd = &section.section_def;
         Ok(format!(
             "{{\"pageNum\":{},\"pageNumType\":{},\"pictureNum\":{},\"tableNum\":{},\"equationNum\":{},\
@@ -139,7 +139,7 @@ impl DocumentCore {
         use super::super::helpers::{json_u16, json_u32, json_bool};
 
         let section = self.document.sections.get_mut(section_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("구역 {} 범위 초과", section_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("구역 {} 범위 초과", section_idx) })?;
         let sd = &mut section.section_def;
 
         if let Some(v) = json_u16(json, "pageNum") { sd.page_num = v; }
@@ -230,7 +230,7 @@ impl DocumentCore {
     /// 구역의 용지 설정(PageDef)을 HWPUNIT 원본값으로 반환 (네이티브 에러 타입)
     pub fn get_page_def_native(&self, section_idx: usize) -> Result<String, HwpError> {
         let section = self.document.sections.get(section_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("구역 {} 범위 초과", section_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("구역 {} 범위 초과", section_idx) })?;
         let pd = &section.section_def.page_def;
         let binding: u8 = match pd.binding {
             crate::model::page::BindingMethod::SingleSided => 0,
@@ -254,7 +254,7 @@ impl DocumentCore {
         use crate::model::page::BindingMethod;
 
         let section = self.document.sections.get_mut(section_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("구역 {} 범위 초과", section_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("구역 {} 범위 초과", section_idx) })?;
         let pd = &mut section.section_def.page_def;
 
         use super::super::helpers::{json_u32, json_bool};
@@ -284,7 +284,7 @@ impl DocumentCore {
                 BindingMethod::SingleSided => 0u32,
                 BindingMethod::DuplexSided => 1u32 << 1,
                 BindingMethod::TopFlip => 2u32 << 1,
-            });
+            };
 
         // FIX 2: paragraphs[0]의 Control::SectionDef에도 page_def 동기화
         let updated_page_def = section.section_def.page_def.clone();
@@ -879,7 +879,7 @@ impl DocumentCore {
                             let tr = ts_descs.get(i).map(|s| s.as_str()).unwrap_or("-");
                             if pr != tr || std::env::var("TYPESET_ALL_PAGES").is_ok() {
                                 eprintln!("  page {:2}: pag=[{}]", i, pr);
-                                eprintln!("           ts =[{}]{}", tr, if pr != tr { " <<<" } else { "" });
+                                eprintln!("           ts =[{}]{}", tr, if pr != tr { " <<<" } else { "" };
                             }
                         }
                     }
@@ -965,7 +965,7 @@ impl DocumentCore {
                     page.active_master_page = selected.map(|mi| MasterPageRef {
                         section_index: idx,
                         master_page_index: mi,
-                    });
+                    };
 
                     // 2. 확장 바탕쪽: 마지막 쪽에 적용
                     // 겹치기(overlap): 기존 바탕쪽 위에 추가
@@ -983,7 +983,7 @@ impl DocumentCore {
                             page.active_master_page = Some(MasterPageRef {
                                 section_index: idx,
                                 master_page_index: replace_idx,
-                            });
+                            };
                         }
                         // 겹침형 확장은 extra로 추가
                         if !overlap_exts.is_empty() {
@@ -1292,7 +1292,7 @@ impl DocumentCore {
             }
             offset += pr.pages.len() as u32;
         }
-        Err(HwpError::PageOutOfRange(page_num))
+        Err(HwpError::PageOutOfRange { page: page_num })
     }
 
     /// 페이지네이션 결과를 텍스트로 덤프 (디버깅용).
@@ -1480,7 +1480,7 @@ impl DocumentCore {
         let active_mp = page_content.active_master_page.as_ref().and_then(|mp_ref| {
             self.document.sections.get(mp_ref.section_index)
                 .and_then(|s| s.section_def.master_pages.get(mp_ref.master_page_index))
-        });
+        };
         // 확장 바탕쪽 조회
         let extra_mps: Vec<&crate::model::header_footer::MasterPage> = page_content.extra_master_pages.iter()
             .filter_map(|mp_ref| {

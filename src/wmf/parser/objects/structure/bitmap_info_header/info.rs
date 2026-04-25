@@ -131,19 +131,19 @@ impl BitmapInfoHeaderInfo {
         if width <= 0 {
             return Err(crate::wmf::parser::ParseError::UnexpectedPattern {
                 cause: "The width field must be positive".to_owned(),
-            });
+            };
         }
 
         if height == 0 {
             return Err(crate::wmf::parser::ParseError::UnexpectedPattern {
                 cause: "The height field must not be zero".to_owned(),
-            });
+            };
         }
 
         if planes != 0x0001 {
             return Err(crate::wmf::parser::ParseError::UnexpectedPattern {
                 cause: "The planes field must be 0x01".to_owned(),
-            });
+            };
         }
 
         Ok((

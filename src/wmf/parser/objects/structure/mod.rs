@@ -38,7 +38,7 @@ fn utf16le_bytes_to_string(
     if !bytes.len().is_multiple_of(2) {
         return Err(crate::wmf::parser::ParseError::UnexpectedPattern {
             cause: "Byte array length must be even".to_owned(),
-        });
+        };
     }
 
     let u16_vec = bytes

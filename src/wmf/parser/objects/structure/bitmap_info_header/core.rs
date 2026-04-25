@@ -53,7 +53,7 @@ impl BitmapInfoHeaderCore {
         if planes != 0x0001 {
             return Err(crate::wmf::parser::ParseError::UnexpectedPattern {
                 cause: "The planes field must be 0x01".to_owned(),
-            });
+            };
         }
 
         if !matches!(
@@ -68,7 +68,7 @@ impl BitmapInfoHeaderCore {
                     "Invalid BitCount `{}` as Core type.",
                     bit_count as u16
                 ),
-            });
+            };
         }
 
         Ok((

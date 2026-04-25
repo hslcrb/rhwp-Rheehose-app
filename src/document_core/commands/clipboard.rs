@@ -54,7 +54,7 @@ impl DocumentCore {
             )));
         }
         if start_para_idx > end_para_idx {
-            return Err(HwpError::RenderError("시작 위치가 끝 위치보다 뒤에 있음".to_string()));
+            return Err(HwpError::RenderError { message: "시작 위치가 끝 위치보다 뒤에 있음".to_string() });
         }
 
         let mut clip_paragraphs = Vec::new();
@@ -115,7 +115,7 @@ impl DocumentCore {
         self.clipboard = Some(ClipboardData {
             paragraphs: clip_paragraphs,
             plain_text: plain_text.clone(),
-        });
+        };
 
         Ok(super::super::helpers::json_ok_with(&format!("\"text\":\"{}\"", escaped)))
     }
@@ -135,20 +135,20 @@ impl DocumentCore {
         // 셀 문단 리스트 접근
         let cell_paragraphs = {
             let section = self.document.sections.get(section_idx)
-                .ok_or_else(|| HwpError::RenderError(format!("구역 {} 범위 초과", section_idx)))?;
+                .ok_or_else(|| HwpError::RenderError { message: format!("구역 {} 범위 초과", section_idx) })?;
             let para = section.paragraphs.get(parent_para_idx)
-                .ok_or_else(|| HwpError::RenderError(format!("문단 {} 범위 초과", parent_para_idx)))?;
+                .ok_or_else(|| HwpError::RenderError { message: format!("문단 {} 범위 초과", parent_para_idx) })?;
             let table = match para.controls.get(control_idx) {
                 Some(Control::Table(t)) => t,
-                _ => return Err(HwpError::RenderError("표가 아님".to_string())),
+                _ => return Err(HwpError::RenderError { message: "표가 아님".to_string() },
             };
             let cell = table.cells.get(cell_idx)
-                .ok_or_else(|| HwpError::RenderError(format!("셀 {} 범위 초과", cell_idx)))?;
+                .ok_or_else(|| HwpError::RenderError { message: format!("셀 {} 범위 초과", cell_idx) })?;
             &cell.paragraphs
         };
 
         if start_cell_para_idx >= cell_paragraphs.len() || end_cell_para_idx >= cell_paragraphs.len() {
-            return Err(HwpError::RenderError("셀 문단 인덱스 범위 초과".to_string()));
+            return Err(HwpError::RenderError { message: "셀 문단 인덱스 범위 초과".to_string() });
         }
 
         let mut clip_paragraphs = Vec::new();
@@ -192,7 +192,7 @@ impl DocumentCore {
         self.clipboard = Some(ClipboardData {
             paragraphs: clip_paragraphs,
             plain_text: plain_text.clone(),
-        });
+        };
 
         Ok(super::super::helpers::json_ok_with(&format!("\"text\":\"{}\"", escaped)))
     }
@@ -205,11 +205,11 @@ impl DocumentCore {
         control_idx: usize,
     ) -> Result<String, HwpError> {
         let section = self.document.sections.get(section_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("구역 {} 범위 초과", section_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("구역 {} 범위 초과", section_idx) })?;
         let para = section.paragraphs.get(para_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("문단 {} 범위 초과", para_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("문단 {} 범위 초과", para_idx) })?;
         let control = para.controls.get(control_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("컨트롤 {} 범위 초과", control_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("컨트롤 {} 범위 초과", control_idx) })?;
 
         // 컨트롤을 포함하는 단일 문단 생성
         // text는 비워둠 (serialize_para_text가 controls에서 확장 제어문자를 생성)
@@ -281,7 +281,7 @@ impl DocumentCore {
         self.clipboard = Some(ClipboardData {
             paragraphs: vec![clip_para],
             plain_text: plain_text.clone(),
-        });
+        };
 
         Ok(super::super::helpers::json_ok_with(&format!("\"text\":\"{}\"", plain_text)))
     }
@@ -300,10 +300,10 @@ impl DocumentCore {
 
         // 인덱스 검증
         if section_idx >= self.document.sections.len() {
-            return Err(HwpError::RenderError(format!("구역 {} 범위 초과", section_idx)));
+            return Err(HwpError::RenderError { message: format!("구역 {} 범위 초과", section_idx) });
         }
         if para_idx >= self.document.sections[section_idx].paragraphs.len() {
-            return Err(HwpError::RenderError(format!("문단 {} 범위 초과", para_idx)));
+            return Err(HwpError::RenderError { message: format!("문단 {} 범위 초과", para_idx) });
         }
 
         self.document.sections[section_idx].raw_stream = None;
@@ -396,30 +396,30 @@ impl DocumentCore {
         // 셀 접근 검증
         let cell_para_count = {
             let section = self.document.sections.get(section_idx)
-                .ok_or_else(|| HwpError::RenderError(format!("구역 {} 범위 초과", section_idx)))?;
+                .ok_or_else(|| HwpError::RenderError { message: format!("구역 {} 범위 초과", section_idx) })?;
             let para = section.paragraphs.get(parent_para_idx)
-                .ok_or_else(|| HwpError::RenderError(format!("문단 {} 범위 초과", parent_para_idx)))?;
+                .ok_or_else(|| HwpError::RenderError { message: format!("문단 {} 범위 초과", parent_para_idx) })?;
             match para.controls.get(control_idx) {
                 Some(Control::Table(t)) => {
                     let cell = t.cells.get(cell_idx)
-                        .ok_or_else(|| HwpError::RenderError(format!("셀 {} 범위 초과", cell_idx)))?;
+                        .ok_or_else(|| HwpError::RenderError { message: format!("셀 {} 범위 초과", cell_idx) })?;
                     cell.paragraphs.len()
                 }
                 Some(Control::Shape(s)) => {
                     let tb = super::super::helpers::get_textbox_from_shape(s)
-                        .ok_or_else(|| HwpError::RenderError("글상자 없음".to_string()))?;
+                        .ok_or_else(|| HwpError::RenderError { message: "글상자 없음".to_string() })?;
                     tb.paragraphs.len()
                 }
                 Some(Control::Picture(p)) => {
                     let cap = p.caption.as_ref()
-                        .ok_or_else(|| HwpError::RenderError("캡션 없음".to_string()))?;
+                        .ok_or_else(|| HwpError::RenderError { message: "캡션 없음".to_string() })?;
                     cap.paragraphs.len()
                 }
-                _ => return Err(HwpError::RenderError("표/글상자/캡션이 아님".to_string())),
+                _ => return Err(HwpError::RenderError { message: "표/글상자/캡션이 아님".to_string() },
             }
         };
         if cell_para_idx >= cell_para_count {
-            return Err(HwpError::RenderError(format!("셀 문단 {} 범위 초과", cell_para_idx)));
+            return Err(HwpError::RenderError { message: format!("셀 문단 {} 범위 초과", cell_para_idx) });
         }
 
         self.document.sections[section_idx].raw_stream = None;
@@ -596,10 +596,10 @@ impl DocumentCore {
 
         // 인덱스 검증
         if section_idx >= self.document.sections.len() {
-            return Err(HwpError::RenderError(format!("구역 {} 범위 초과", section_idx)));
+            return Err(HwpError::RenderError { message: format!("구역 {} 범위 초과", section_idx) });
         }
         if para_idx >= self.document.sections[section_idx].paragraphs.len() {
-            return Err(HwpError::RenderError(format!("문단 {} 범위 초과", para_idx)));
+            return Err(HwpError::RenderError { message: format!("문단 {} 범위 초과", para_idx) });
         }
 
         self.document.sections[section_idx].raw_stream = None;
@@ -715,10 +715,10 @@ impl DocumentCore {
         end_char_offset: usize,
     ) -> Result<String, HwpError> {
         let section = self.document.sections.get(section_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("구역 {} 범위 초과", section_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("구역 {} 범위 초과", section_idx) })?;
 
         if start_para_idx >= section.paragraphs.len() || end_para_idx >= section.paragraphs.len() {
-            return Err(HwpError::RenderError("문단 범위 초과".to_string()));
+            return Err(HwpError::RenderError { message: "문단 범위 초과".to_string() });
         }
 
         let mut html = String::from("<html><body>\n<!--StartFragment-->\n");
@@ -747,15 +747,15 @@ impl DocumentCore {
         end_char_offset: usize,
     ) -> Result<String, HwpError> {
         let section = self.document.sections.get(section_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("구역 {} 범위 초과", section_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("구역 {} 범위 초과", section_idx) })?;
         let para = section.paragraphs.get(parent_para_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("문단 {} 범위 초과", parent_para_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("문단 {} 범위 초과", parent_para_idx) })?;
         let table = match para.controls.get(control_idx) {
             Some(Control::Table(t)) => t,
-            _ => return Err(HwpError::RenderError("표가 아님".to_string())),
+            _ => return Err(HwpError::RenderError { message: "표가 아님".to_string() },
         };
         let cell = table.cells.get(cell_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("셀 {} 범위 초과", cell_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("셀 {} 범위 초과", cell_idx) })?;
 
         let mut html = String::from("<html><body>\n<!--StartFragment-->\n");
 
@@ -779,11 +779,11 @@ impl DocumentCore {
         control_idx: usize,
     ) -> Result<String, HwpError> {
         let section = self.document.sections.get(section_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("구역 {} 범위 초과", section_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("구역 {} 범위 초과", section_idx) })?;
         let para = section.paragraphs.get(para_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("문단 {} 범위 초과", para_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("문단 {} 범위 초과", para_idx) })?;
         let control = para.controls.get(control_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("컨트롤 {} 범위 초과", control_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("컨트롤 {} 범위 초과", control_idx) })?;
 
         let mut html = String::from("<html><body>\n<!--StartFragment-->\n");
         html.push_str(&self.control_to_html(control));
@@ -1115,24 +1115,24 @@ impl DocumentCore {
         control_idx: usize,
     ) -> Result<Vec<u8>, HwpError> {
         let section = self.document.sections.get(section_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("구역 {} 범위 초과", section_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("구역 {} 범위 초과", section_idx) })?;
         let para = section.paragraphs.get(para_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("문단 {} 범위 초과", para_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("문단 {} 범위 초과", para_idx) })?;
         let control = para.controls.get(control_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("컨트롤 {} 범위 초과", control_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("컨트롤 {} 범위 초과", control_idx) })?;
 
         let pic = match control {
             Control::Picture(p) => p,
-            _ => return Err(HwpError::RenderError("Picture 컨트롤이 아닙니다".to_string())),
+            _ => return Err(HwpError::RenderError { message: "Picture 컨트롤이 아닙니다".to_string() },
         };
 
         let bin_data_id = pic.image_attr.bin_data_id;
         if bin_data_id == 0 {
-            return Err(HwpError::RenderError("이미지 데이터 없음 (bin_data_id=0)".to_string()));
+            return Err(HwpError::RenderError { message: "이미지 데이터 없음 (bin_data_id=0 }".to_string()));
         }
 
         let bdc = self.document.bin_data_content.get((bin_data_id - 1) as usize)
-            .ok_or_else(|| HwpError::RenderError(format!("바이너리 데이터 {} 범위 초과", bin_data_id)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("바이너리 데이터 {} 범위 초과", bin_data_id) })?;
 
         Ok(bdc.data.clone())
     }
@@ -1145,24 +1145,24 @@ impl DocumentCore {
         control_idx: usize,
     ) -> Result<String, HwpError> {
         let section = self.document.sections.get(section_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("구역 {} 범위 초과", section_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("구역 {} 범위 초과", section_idx) })?;
         let para = section.paragraphs.get(para_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("문단 {} 범위 초과", para_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("문단 {} 범위 초과", para_idx) })?;
         let control = para.controls.get(control_idx)
-            .ok_or_else(|| HwpError::RenderError(format!("컨트롤 {} 범위 초과", control_idx)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("컨트롤 {} 범위 초과", control_idx) })?;
 
         let pic = match control {
             Control::Picture(p) => p,
-            _ => return Err(HwpError::RenderError("Picture 컨트롤이 아닙니다".to_string())),
+            _ => return Err(HwpError::RenderError { message: "Picture 컨트롤이 아닙니다".to_string() },
         };
 
         let bin_data_id = pic.image_attr.bin_data_id;
         if bin_data_id == 0 {
-            return Err(HwpError::RenderError("이미지 데이터 없음 (bin_data_id=0)".to_string()));
+            return Err(HwpError::RenderError { message: "이미지 데이터 없음 (bin_data_id=0 }".to_string()));
         }
 
         let bdc = self.document.bin_data_content.get((bin_data_id - 1) as usize)
-            .ok_or_else(|| HwpError::RenderError(format!("바이너리 데이터 {} 범위 초과", bin_data_id)))?;
+            .ok_or_else(|| HwpError::RenderError { message: format!("바이너리 데이터 {} 범위 초과", bin_data_id) })?;
 
         Ok(detect_clipboard_image_mime(&bdc.data).to_string())
     }

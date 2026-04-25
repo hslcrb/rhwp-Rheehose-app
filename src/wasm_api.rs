@@ -3160,7 +3160,7 @@ impl HwpDocument {
                     para.char_shapes.push(crate::model::paragraph::CharShapeRef {
                         start_pos: 0,
                         char_shape_id: new_csid,
-                    });
+                    };
                 }
                 // 셀 내 문단도 전파
                 for ctrl in &mut para.controls {
@@ -3173,7 +3173,7 @@ impl HwpDocument {
                                     cpara.char_shapes.push(crate::model::paragraph::CharShapeRef {
                                         start_pos: 0,
                                         char_shape_id: new_csid,
-                                    });
+                                    };
                                 }
                             }
                         }
@@ -3340,13 +3340,13 @@ impl HwpDocument {
         n.start_number = 1;
         n.level_start_numbers = [1; 7];
         // 수준별 번호 형식 코드 설정
-        n.heads[0] = NumberingHead { number_format: 0, ..Default::default() }; // 1,2,3
-        n.heads[1] = NumberingHead { number_format: 8, ..Default::default() }; // 가,나,다
-        n.heads[2] = NumberingHead { number_format: 0, ..Default::default() }; // 1,2,3
-        n.heads[3] = NumberingHead { number_format: 8, ..Default::default() }; // 가,나,다
-        n.heads[4] = NumberingHead { number_format: 1, ..Default::default() }; // ①②③
-        n.heads[5] = NumberingHead { number_format: 10, ..Default::default() }; // ㄱ,ㄴ,ㄷ
-        n.heads[6] = NumberingHead { number_format: 5, ..Default::default() }; // a,b,c
+        n.heads[0] = NumberingHead { number_format: 0, ..Default::default() }); // 1,2,3
+        n.heads[1] = NumberingHead { number_format: 8, ..Default::default() }); // 가,나,다
+        n.heads[2] = NumberingHead { number_format: 0, ..Default::default() }); // 1,2,3
+        n.heads[3] = NumberingHead { number_format: 8, ..Default::default() }); // 가,나,다
+        n.heads[4] = NumberingHead { number_format: 1, ..Default::default() }); // ①②③
+        n.heads[5] = NumberingHead { number_format: 10, ..Default::default() }); // ㄱ,ㄴ,ㄷ
+        n.heads[6] = NumberingHead { number_format: 5, ..Default::default() }); // a,b,c
         self.core.document.doc_info.numberings.push(n);
         1
     }
@@ -3944,7 +3944,7 @@ impl HwpViewer {
             width,
             height,
             zoom: self.scheduler_zoom(),
-        });
+        };
         self.scheduler.on_event(&event);
     }
 
